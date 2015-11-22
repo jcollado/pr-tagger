@@ -7,11 +7,11 @@ const split2 = require('split2')
 
 const spawn = require('child_process').spawn
 
-const pkg = require('./package')
+const prTagger = require('./package')
 
 program
-  .version(pkg.version)
-  .description(pkg.description)
+  .version(prTagger.version)
+  .description(prTagger.description)
   .parse(process.argv)
 
 spawn('bash', ['-c', 'git log'])
