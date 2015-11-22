@@ -3,6 +3,6 @@ const program = require('commander')
 
 const version = require('./package').version
 
-program.version(version)
-
-program.parse(process.argv)
+program
+  .version(version)
+  .parse(process.argv)
