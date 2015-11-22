@@ -1,0 +1,25 @@
+{
+  "name": "pr-tagger",
+  "version": "0.0.0",
+  "description": "Add comment to PRs in GitHub with version tag for latest release",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcollado/pr-tagger.git"
+  },
+  "keywords": [
+    "PR",
+    "tag",
+    "github",
+    "release"
+  ],
+  "author": "Javier Collado <javier.collado@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jcollado/pr-tagger/issues"
+  },
+  "homepage": "https://github.com/jcollado/pr-tagger#readme"
+}
