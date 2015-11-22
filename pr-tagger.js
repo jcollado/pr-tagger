@@ -11,15 +11,19 @@ const split2 = require('split2')
 
 const spawn = require('child_process').spawn
 
-const prTagger = require('./package')
+const pkg = require('./package')
+const debug = require('debug')(pkg.name)
 
 const pkgFile = path.join(process.cwd(), 'package.json')
 const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
 const pkgId = pkgToId(pkgData)
 
+debug(pkg.name + ' v' + pkg.version)
+debug('pkgId: ' + JSON.stringify(pkgId))
+
 program
-  .version(prTagger.version)
-  .description(prTagger.description)
+  .version(pkg.version)
+  .description(pkg.description)
   .option('-u, --user [user]', 'GitHub [user]', pkgId.user)
   .option('-p, --project [project]', 'GitHub [project]', pkgId.name)
   .parse(process.argv)
