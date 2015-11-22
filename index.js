@@ -1,2 +1,8 @@
 #!/usr/bin/env node
-console.log('Hello World!')
+const program = require('commander')
+
+const version = require('./package').version
+
+program.version(version)
+
+program.parse(process.argv)

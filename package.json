@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/jcollado/pr-tagger/issues"
   },
-  "homepage": "https://github.com/jcollado/pr-tagger#readme"
+  "homepage": "https://github.com/jcollado/pr-tagger#readme",
+  "dependencies": {
+    "commander": "^2.9.0"
+  }
 }
