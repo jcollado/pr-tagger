@@ -7,7 +7,9 @@
     "pr-tagger": "./index.js"
   },
   "scripts": {
-    "test": "npm test"
+    "lint": "standard",
+    "pretest": "npm run lint",
+    "test": "true"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,8 @@
     "commit-stream": "^1.0.1",
     "list-stream": "^1.0.0",
     "split2": "^1.0.0"
+  },
+  "devDependencies": {
+    "standard": "^5.4.1"
   }
 }
