@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict'
 const commitStream = require('commit-stream')
 const listStream = require('list-stream')
 const program = require('commander')
