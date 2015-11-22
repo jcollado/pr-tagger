@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 'use strict'
+const fs = require('fs')
+const path = require('path')
+
 const commitStream = require('commit-stream')
 const listStream = require('list-stream')
+const pkgToId = require('pkg-to-id')
 const program = require('commander')
 const split2 = require('split2')
 
@@ -9,15 +13,21 @@ const spawn = require('child_process').spawn
 
 const prTagger = require('./package')
 
+const pkgFile = path.join(process.cwd(), 'package.json')
+const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
+const pkgId = pkgToId(pkgData)
+
 program
   .version(prTagger.version)
   .description(prTagger.description)
+  .option('-u, --user [user]', 'GitHub [user]', pkgId.user)
+  .option('-p, --project [project]', 'GitHub [project]', pkgId.name)
   .parse(process.argv)
 
-spawn('bash', ['-c', 'git log'])
+spawn('bash', ['-c', 'git log --pretty=full'])
   .stdout
     .pipe(split2())
-    .pipe(commitStream())
+    .pipe(commitStream(program.user, program.project))
     .pipe(listStream.obj(onCommitList))
 
 function onCommitList (error, commitList) {
