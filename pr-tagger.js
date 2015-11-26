@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 'use strict'
+const exec = require('child_process').execSync
 const fs = require('fs')
 const path = require('path')
+const util = require('util')
 
+const ghauth = require('ghauth')
 const pkgToId = require('pkg-to-id')
 const program = require('commander')
 const semverRegex = require('semver-regex')
 const winston = require('winston')
-
-const exec = require('child_process').execSync
 
 const pkg = require('./package')
 
@@ -80,3 +81,15 @@ const prs = commits.split('\n').map(function (line) {
 }).filter(Boolean)
 logger.debug('PRs: %s', prs)
 
+const authOptions = {
+  configName: pkg.name,
+  note: util.format('%s: %s', pkg.name, pkg.description)
+}
+
+ghauth(authOptions, function (error, authData) {
+  if (error) {
+    logger.error('GitHub Authorization failure: %s', error)
+    process.exit(1)
+  }
+  logger.debug('GitHub Authorization success for user: %s', authData.user)
+})
