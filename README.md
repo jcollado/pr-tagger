@@ -6,3 +6,23 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 Add comment to PRs in GitHub with version tag for latest release
+
+## Installation
+
+```bash
+npm install -g pr-tagger
+```
+
+## Usage
+
+- Add comment with latest version tag to merged PRs:
+
+```bash
+pr-tagger
+```
+
+- Add comment for particular version tag to merged PRs:
+
+```bash
+pr-tagger -t <tag>
+```
