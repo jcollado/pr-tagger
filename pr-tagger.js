@@ -5,6 +5,7 @@ const path = require('path')
 
 const pkgToId = require('pkg-to-id')
 const program = require('commander')
+const semverRegex = require('semver-regex')
 const winston = require('winston')
 
 const exec = require('child_process').execSync
@@ -25,7 +26,7 @@ logger.info('%s v%s', pkg.name, pkg.version)
 logger.debug('pkgId:', pkgId)
 
 const tags = exec("git tag --sort='-version:refname'")
-  .toString().split('\n')
+  .toString().split('\n').filter(tag => semverRegex().test(tag))
 logger.debug('Tags: %s', tags)
 
 program
