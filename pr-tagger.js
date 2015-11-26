@@ -35,6 +35,15 @@ function parseArguments (defaults) {
     .parse(process.argv)
 }
 
+function getMergeCommits (revRange) {
+  const gitLogCmd = `git log ${revRange} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
+  logger.debug('Command: %s', gitLogCmd)
+
+  const commits = exec(gitLogCmd).toString().trimRight()
+  logger.debug('Commits: %s', commits)
+  return commits
+}
+
 function writeComments (authOptions, prs, comment) {
   ghauth(authOptions, function (error, authData) {
     if (error) {
@@ -108,11 +117,7 @@ function main () {
   const fromTag = tags[toTagIndex + 1]
 
   const revRange = (typeof fromTag !== 'undefined') ? `${fromTag}..${toTag}` : toTag
-  const gitLogCmd = `git log ${revRange} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
-  logger.debug('Command: %s', gitLogCmd)
-
-  const commits = exec(gitLogCmd).toString().trimRight()
-  logger.debug('Commits: %s', commits)
+  const commits = getMergeCommits(revRange)
 
   const prs = commits.split('\n').map(function (line) {
     const match = /Merge pull request #(\d+) from /.exec(line)
