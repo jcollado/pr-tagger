@@ -29,11 +29,8 @@
   "homepage": "https://github.com/jcollado/pr-tagger#readme",
   "dependencies": {
     "commander": "^2.9.0",
-    "commit-stream": "^1.0.1",
     "debug": "^2.2.0",
-    "list-stream": "^1.0.0",
-    "pkg-to-id": "0.0.3",
-    "split2": "^1.0.0"
+    "pkg-to-id": "0.0.3"
   },
   "devDependencies": {
     "ghooks": "^1.0.1",

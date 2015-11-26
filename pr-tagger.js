@@ -3,13 +3,9 @@
 const fs = require('fs')
 const path = require('path')
 
-const commitStream = require('commit-stream')
-const listStream = require('list-stream')
 const pkgToId = require('pkg-to-id')
 const program = require('commander')
-const split2 = require('split2')
 
-const spawn = require('child_process').spawn
 
 const pkg = require('./package')
 const debug = require('debug')(pkg.name)
@@ -28,16 +24,5 @@ program
   .option('-p, --project [project]', 'GitHub [project]', pkgId.name)
   .parse(process.argv)
 
-spawn('bash', ['-c', 'git log --pretty=full'])
-  .stdout
-    .pipe(split2())
-    .pipe(commitStream(program.user, program.project))
-    .pipe(listStream.obj(onCommitList))
 
-function onCommitList (error, commitList) {
-  if (error) throw error
 
-  commitList.forEach(function (commit) {
-    console.log(commit)
-  })
-}
