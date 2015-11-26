@@ -97,7 +97,7 @@ ghauth(authOptions, function (error, authData) {
   }
   logger.debug('GitHub Authorization success for user: %s', authData.user)
   prs.forEach(function (pr) {
-    logger.debug('Adding comment to PR#%d', pr)
+    logger.info('Adding comment to PR#%d', pr)
     if (!program.dryRun) {
       ghissues.createComment(
         authData, program.user, program.project, pr, toTag, function (error, comment) {
