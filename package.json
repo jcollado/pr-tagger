@@ -29,10 +29,10 @@
   "homepage": "https://github.com/jcollado/pr-tagger#readme",
   "dependencies": {
     "commander": "2.9.0",
-    "ghauth": "^3.0.0",
-    "ghissues": "^1.1.2",
+    "ghauth": "3.0.0",
+    "ghissues": "1.1.2",
     "pkg-to-id": "0.0.3",
-    "semver-regex": "^1.0.0",
+    "semver-regex": "1.0.0",
     "winston": "2.1.1"
   },
   "devDependencies": {
