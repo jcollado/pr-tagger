@@ -32,10 +32,18 @@ logger.debug('Tags: %s', tags)
 program
   .version(pkg.version)
   .description(pkg.description)
-  .option('-u, --user [user]', 'GitHub [user]', pkgId.user)
-  .option('-p, --project [project]', 'GitHub [project]', pkgId.name)
+  .option('-u, --user [user]', 'GitHub user', pkgId.user)
+  .option('-p, --project [project]', 'GitHub project', pkgId.name)
+  .option('-t, --tag [tag]', 'Git tag', tags[0])
   .parse(process.argv)
 logger.debug('program:', {user: program.user, project: program.project})
 
-
+if (!semverRegex().test(program.tag)) {
+  logger.error('Tag not semver compliant: %s', program.tag)
+  process.exit(1)
+}
+if (tags.indexOf(program.tag) === -1) {
+  logger.error('Tag not found in repository: %s', program.tag)
+  process.exit(1)
+}
 
