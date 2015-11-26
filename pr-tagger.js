@@ -65,3 +65,12 @@ logger.debug('Command: %s', gitLogCmd)
 const commits = exec(gitLogCmd).toString().trimRight()
 logger.debug('Commits: %s', commits)
 
+const prs = commits.split('\n').map(function (line) {
+  const match = /Merge pull request #(\d+) from /.exec(line)
+  if (match) {
+    return match[1]
+  }
+  return false
+}).filter(Boolean)
+logger.debug('PRs: %s', prs)
+
