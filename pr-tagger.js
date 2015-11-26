@@ -44,6 +44,18 @@ function getMergeCommits (revRange) {
   return commits
 }
 
+function getPRs (commits) {
+  const prs = commits.split('\n').map(function (line) {
+    const match = /Merge pull request #(\d+) from /.exec(line)
+    if (match) {
+      return parseInt(match[1], 10)
+    }
+    return false
+  }).filter(Boolean)
+  logger.debug('PRs: %s', prs)
+  return prs
+}
+
 function writeComments (authOptions, prs, comment) {
   ghauth(authOptions, function (error, authData) {
     if (error) {
@@ -118,15 +130,7 @@ function main () {
 
   const revRange = (typeof fromTag !== 'undefined') ? `${fromTag}..${toTag}` : toTag
   const commits = getMergeCommits(revRange)
-
-  const prs = commits.split('\n').map(function (line) {
-    const match = /Merge pull request #(\d+) from /.exec(line)
-    if (match) {
-      return parseInt(match[1], 10)
-    }
-    return false
-  }).filter(Boolean)
-  logger.debug('PRs: %s', prs)
+  const prs = getPRs(commits)
 
   const authOptions = {
     configName: pkg.name,
