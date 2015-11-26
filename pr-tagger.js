@@ -59,7 +59,8 @@ if (toTagIndex === -1) {
 const toTag = program.tag
 const fromTag = tags[toTagIndex + 1]
 
-const gitLogCmd = `git log ${fromTag}..${toTag} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
+const revRange = (typeof fromTag !== 'undefined') ? `${fromTag}..${toTag}` : toTag
+const gitLogCmd = `git log ${revRange} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
 logger.debug('Command: %s', gitLogCmd)
 
 const commits = exec(gitLogCmd).toString().trimRight()
