@@ -50,8 +50,18 @@ if (!semverRegex().test(program.tag)) {
   logger.error('Tag not semver compliant: %s', program.tag)
   process.exit(1)
 }
-if (tags.indexOf(program.tag) === -1) {
+
+const toTagIndex = tags.indexOf(program.tag)
+if (toTagIndex === -1) {
   logger.error('Tag not found in repository: %s', program.tag)
   process.exit(1)
 }
+const toTag = program.tag
+const fromTag = tags[toTagIndex + 1]
+
+const gitLogCmd = `git log ${fromTag}..${toTag} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
+logger.debug('Command: %s', gitLogCmd)
+
+const commits = exec(gitLogCmd).toString().trimRight()
+logger.debug('Commits: %s', commits)
 
