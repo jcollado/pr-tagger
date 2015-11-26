@@ -108,4 +108,6 @@ ghauth(authOptions, function (error, authData) {
         })
     }
   })
+
+  logger.info('Done!')
 })
