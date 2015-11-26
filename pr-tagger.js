@@ -36,6 +36,8 @@ program
           'Log level',
           /^(error|warn|info|verbose|debug|silly)$/i,
           'info')
+  .option('-n --dry-run',
+          'Log actions, but skip adding comments to GitHub PRs')
   .parse(process.argv)
 
 logger.level = program.logLevel
@@ -45,7 +47,8 @@ logger.debug('program:', {
   user: program.user,
   project: program.project,
   tag: program.tag,
-  logLevel: program.logLevel
+  logLevel: program.logLevel,
+  dryRun: program.dryRun
 })
 
 if (tags.length === 0) {
