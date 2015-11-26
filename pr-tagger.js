@@ -36,7 +36,11 @@ program
   .option('-p, --project [project]', 'GitHub project', pkgId.name)
   .option('-t, --tag [tag]', 'Git tag', tags[0])
   .parse(process.argv)
-logger.debug('program:', {user: program.user, project: program.project})
+logger.debug('program:', {
+  user: program.user,
+  project: program.project,
+  tag: program.tag
+})
 
 if (!semverRegex().test(program.tag)) {
   logger.error('Tag not semver compliant: %s', program.tag)
