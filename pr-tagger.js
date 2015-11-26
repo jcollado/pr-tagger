@@ -6,6 +6,7 @@ const path = require('path')
 const util = require('util')
 
 const ghauth = require('ghauth')
+const ghissues = require('ghissues')
 const pkgToId = require('pkg-to-id')
 const program = require('commander')
 const semverRegex = require('semver-regex')
@@ -95,4 +96,16 @@ ghauth(authOptions, function (error, authData) {
     process.exit(1)
   }
   logger.debug('GitHub Authorization success for user: %s', authData.user)
+  prs.forEach(function (pr) {
+    logger.debug('Adding comment to PR#%d', pr)
+    if (!program.dryRun) {
+      ghissues.createComment(
+        authData, program.user, program.project, pr, toTag, function (error, comment) {
+          if (error) {
+            logger.error('Error adding comment to PR#%d: %s', pr, error)
+          }
+          logger.debug('Comment: %s', comment)
+        })
+    }
+  })
 })
