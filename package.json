@@ -28,13 +28,13 @@
   },
   "homepage": "https://github.com/jcollado/pr-tagger#readme",
   "dependencies": {
-    "commander": "^2.9.0",
-    "debug": "^2.2.0",
-    "pkg-to-id": "0.0.3"
+    "commander": "2.9.0",
+    "pkg-to-id": "0.0.3",
+    "winston": "2.1.1"
   },
   "devDependencies": {
-    "ghooks": "^1.0.1",
-    "standard": "^5.4.1"
+    "ghooks": "1.0.1",
+    "standard": "5.4.1"
   },
   "config": {
     "ghooks": {
