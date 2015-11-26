@@ -14,6 +14,11 @@ const winston = require('winston')
 
 const pkg = require('./package')
 
+const logger = new winston.Logger({
+  transports: [new winston.transports.Console()]
+})
+logger.cli()
+
 function parseArguments (defaults) {
   program
     .version(defaults.version)
@@ -30,11 +35,32 @@ function parseArguments (defaults) {
     .parse(process.argv)
 }
 
-function main () {
-  const logger = new winston.Logger({
-    transports: [new winston.transports.Console()]
+function writeComments (authOptions, prs, comment) {
+  ghauth(authOptions, function (error, authData) {
+    if (error) {
+      logger.error('GitHub Authorization failure: %s', error)
+      process.exit(1)
+    }
+    logger.debug('GitHub Authorization success for user: %s', authData.user)
+    prs.forEach(function (pr) {
+      logger.info('Adding comment to PR#%d', pr)
+      if (!program.dryRun) {
+        ghissues.createComment(
+          authData, program.user, program.project, pr, comment, function (error, comment) {
+            if (error) {
+              logger.error('Error adding comment to PR#%d: %s', pr, error)
+            } else {
+              logger.debug('Comment: %s', comment)
+            }
+          })
+      }
+    })
+
+    logger.info('Done!')
   })
-  logger.cli()
+}
+
+function main () {
   logger.info('%s v%s', pkg.name, pkg.version)
 
   const pkgFile = path.join(process.cwd(), 'package.json')
@@ -101,28 +127,7 @@ function main () {
     configName: pkg.name,
     note: util.format('%s: %s', pkg.name, pkg.description)
   }
-
-  ghauth(authOptions, function (error, authData) {
-    if (error) {
-      logger.error('GitHub Authorization failure: %s', error)
-      process.exit(1)
-    }
-    logger.debug('GitHub Authorization success for user: %s', authData.user)
-    prs.forEach(function (pr) {
-      logger.info('Adding comment to PR#%d', pr)
-      if (!program.dryRun) {
-        ghissues.createComment(
-          authData, program.user, program.project, pr, toTag, function (error, comment) {
-            if (error) {
-              logger.error('Error adding comment to PR#%d: %s', pr, error)
-            }
-            logger.debug('Comment: %s', comment)
-          })
-      }
-    })
-
-    logger.info('Done!')
-  })
+  writeComments(authOptions, prs, toTag)
 }
 
 if (require.main === module) {
