@@ -39,14 +39,14 @@ program
   .parse(process.argv)
 
 logger.level = program.logLevel
+logger.debug('pkgId:', pkgId)
+logger.debug('Tags: %s', tags)
 logger.debug('program:', {
   user: program.user,
   project: program.project,
   tag: program.tag,
   logLevel: program.logLevel
 })
-logger.debug('pkgId:', pkgId)
-logger.debug('Tags: %s', tags)
 
 if (tags.length === 0) {
   logger.error('No tags found in repository')
