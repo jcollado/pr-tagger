@@ -17,17 +17,13 @@ const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
 const pkgId = pkgToId(pkgData)
 
 const logger = new winston.Logger({
-  level: 'debug',
   transports: [new winston.transports.Console()]
 })
 logger.cli()
-
 logger.info('%s v%s', pkg.name, pkg.version)
-logger.debug('pkgId:', pkgId)
 
 const tags = exec("git tag --sort='-version:refname'")
   .toString().split('\n').filter(tag => semverRegex().test(tag))
-logger.debug('Tags: %s', tags)
 
 program
   .version(pkg.version)
@@ -35,12 +31,21 @@ program
   .option('-u, --user [user]', 'GitHub user', pkgId.user)
   .option('-p, --project [project]', 'GitHub project', pkgId.name)
   .option('-t, --tag [tag]', 'Git tag', tags[0])
+  .option('-l, --log-level [logLevel]',
+          'Log level',
+          /^(error|warn|info|verbose|debug|silly)$/i,
+          'info')
   .parse(process.argv)
+
+logger.level = program.logLevel
 logger.debug('program:', {
   user: program.user,
   project: program.project,
-  tag: program.tag
+  tag: program.tag,
+  logLevel: program.logLevel
 })
+logger.debug('pkgId:', pkgId)
+logger.debug('Tags: %s', tags)
 
 if (tags.length === 0) {
   logger.error('No tags found in repository')
