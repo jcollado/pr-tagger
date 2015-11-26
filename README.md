@@ -24,6 +24,8 @@ npm install -g pr-tagger
 
 ## Usage
 
+*Note*: Please use the `-n/--dry-run` option when testing the tool to make sure no comment is actually added to a github pull request.
+
 - Add comment with latest version tag to merged PRs:
 
 ```bash
