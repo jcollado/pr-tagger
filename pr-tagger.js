@@ -14,33 +14,44 @@ const winston = require('winston')
 
 const pkg = require('./package')
 
-function main () {
-  const pkgFile = path.join(process.cwd(), 'package.json')
-  const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
-  const pkgId = pkgToId(pkgData)
+function parseArguments (defaults) {
+  program
+    .version(defaults.version)
+    .description(defaults.description)
+    .option('-u, --user [user]', 'GitHub user', defaults.user)
+    .option('-p, --project [project]', 'GitHub project', defaults.project)
+    .option('-t, --tag [tag]', 'Git tag', defaults.tag)
+    .option('-l, --log-level [logLevel]',
+            'Log level',
+            /^(error|warn|info|verbose|debug|silly)$/i,
+            defaults.logLevel)
+    .option('-n --dry-run',
+            'Log actions, but skip adding comments to GitHub PRs')
+    .parse(process.argv)
+}
 
+function main () {
   const logger = new winston.Logger({
     transports: [new winston.transports.Console()]
   })
   logger.cli()
   logger.info('%s v%s', pkg.name, pkg.version)
 
+  const pkgFile = path.join(process.cwd(), 'package.json')
+  const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
+  const pkgId = pkgToId(pkgData)
   const tags = exec("git tag --sort='-version:refname'")
     .toString().split('\n').filter(tag => semverRegex().test(tag))
 
-  program
-    .version(pkg.version)
-    .description(pkg.description)
-    .option('-u, --user [user]', 'GitHub user', pkgId.user)
-    .option('-p, --project [project]', 'GitHub project', pkgId.name)
-    .option('-t, --tag [tag]', 'Git tag', tags[0])
-    .option('-l, --log-level [logLevel]',
-            'Log level',
-            /^(error|warn|info|verbose|debug|silly)$/i,
-            'info')
-    .option('-n --dry-run',
-            'Log actions, but skip adding comments to GitHub PRs')
-    .parse(process.argv)
+  const defaults = {
+    version: pkg.version,
+    description: pkg.description,
+    user: pkgId.user,
+    project: pkgId.name,
+    tag: tags[0],
+    logLevel: 'info'
+  }
+  parseArguments(defaults)
 
   logger.level = program.logLevel
   logger.debug('pkgId:', pkgId)
