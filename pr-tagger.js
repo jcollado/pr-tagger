@@ -42,6 +42,10 @@ logger.debug('program:', {
   tag: program.tag
 })
 
+if (tags.length === 0) {
+  logger.error('No tags found in repository')
+  process.exit(1)
+}
 if (!semverRegex().test(program.tag)) {
   logger.error('Tag not semver compliant: %s', program.tag)
   process.exit(1)
