@@ -7,6 +7,7 @@ const pkgToId = require('pkg-to-id')
 const program = require('commander')
 const winston = require('winston')
 
+const exec = require('child_process').execSync
 
 const pkg = require('./package')
 
@@ -22,6 +23,10 @@ logger.cli()
 
 logger.info('%s v%s', pkg.name, pkg.version)
 logger.debug('pkgId:', pkgId)
+
+const tags = exec("git tag --sort='-version:refname'")
+  .toString().split('\n')
+logger.debug('Tags: %s', tags)
 
 program
   .version(pkg.version)
