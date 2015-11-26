@@ -75,7 +75,7 @@ logger.debug('Commits: %s', commits)
 const prs = commits.split('\n').map(function (line) {
   const match = /Merge pull request #(\d+) from /.exec(line)
   if (match) {
-    return match[1]
+    return parseInt(match[1], 10)
   }
   return false
 }).filter(Boolean)
