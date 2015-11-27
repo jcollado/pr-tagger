@@ -7,7 +7,7 @@ const path = require('path')
 const Command = require('commander').Command
 const ghauth = require('ghauth')
 const ghissues = require('ghissues')
-const pkgToId = require('pkg-to-id')
+const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 const winston = require('winston')
 
@@ -94,29 +94,35 @@ function main () {
   logger.info('%s v%s', pkg.name, pkg.version)
 
   const pkgFile = path.join(process.cwd(), 'package.json')
-  let pkgId
-  if (fs.existsSync(pkgFile)) {
-    const pkgData = require(pkgFile)
-    pkgId = pkgToId(pkgData)
-  } else {
+  let url = {}
+  if (!fs.existsSync(pkgFile)) {
     logger.warn('File not found: %s', pkgFile)
-    pkgId = {}
+  } else {
+    const pkgData = require(pkgFile)
+    if (typeof pkgData.repository === 'undefined' &&
+        pkgData.repository.type !== 'git' &&
+        typeof pkgData.repository.url === 'undefined') {
+      logger.warn('Git repository URL not found')
+    } else {
+      url = ghUrl(pkgData.repository.url)
+    }
   }
+
   const tags = exec("git tag --sort='-version:refname'")
     .toString().split('\n').filter(tag => semverRegex().test(tag))
 
   const defaults = {
     version: pkg.version,
     description: pkg.description,
-    user: pkgId.user,
-    project: pkgId.name,
+    user: url.user,
+    project: url.project,
     tag: tags[0],
     logLevel: 'info'
   }
   const program = parseArguments(defaults, process.argv)
 
   logger.level = program.logLevel
-  logger.debug('pkgId:', pkgId)
+  logger.debug('url:', url)
   logger.debug('Tags: %s', tags)
   logger.debug('program:', {
     user: program.user,
