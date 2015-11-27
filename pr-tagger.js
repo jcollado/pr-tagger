@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict'
-const exec = require('child_process').execSync
+const execSync = require('child_process').execSync
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
@@ -18,6 +18,16 @@ const logger = new winston.Logger({
   transports: [new winston.transports.Console()]
 })
 logger.cli()
+
+function exec (command) {
+  logger.debug('Command: %s', command)
+  try {
+    return execSync(command)
+  } catch (error) {
+    logger.error(error)
+    process.exit(1)
+  }
+}
 
 function parseArguments (defaults, argv) {
   const program = new Command()
@@ -39,8 +49,6 @@ function parseArguments (defaults, argv) {
 
 function getMergeCommits (revRange) {
   const gitLogCmd = `git log ${revRange} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
-  logger.debug('Command: %s', gitLogCmd)
-
   const commits = exec(gitLogCmd).toString().trimRight()
   logger.debug('Commits: %s', commits)
   return commits
