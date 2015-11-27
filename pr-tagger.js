@@ -73,20 +73,39 @@ function writeComments (authOptions, program, prs, comment) {
     }
     logger.debug('GitHub Authorization success for user: %s', authData.user)
     prs.forEach(function (pr) {
-      logger.info('Adding comment to PR#%d', pr)
-      if (!program.dryRun) {
-        ghissues.createComment(
-          authData, program.user, program.project, pr, comment, function (error, comment) {
-            if (error) {
-              logger.error('Error adding comment to PR#%d: %s', pr, error)
-            } else {
-              logger.debug('Comment: %s', comment)
-            }
-          })
-      }
-    })
+      logger.info('Checking PR#%d comments...', pr)
+      ghissues.listComments(
+        authData, program.user, program.project, pr,
+        function (error, commentList) {
+          if (error) {
+            logger.error('Error checking PR#%d comments: %s', pr, error)
+          } else {
+            const commentBodies = commentList.map(comment => comment.body)
+            const semverComments = commentBodies.filter(function (body) {
+              return semverRegex().test(body)
+            })
 
-    logger.info('Done!')
+            if (semverComments.length > 0) {
+              logger.warn(
+                'Semver comments found in PR#%d: %s',
+                pr, JSON.stringify(semverComments))
+            } else {
+              logger.info('Adding comment to PR#%d', pr)
+              if (!program.dryRun) {
+                ghissues.createComment(
+                  authData, program.user, program.project, pr, comment,
+                  function (error, comment) {
+                    if (error) {
+                      logger.error('Error adding comment to PR#%d: %s', pr, error)
+                    } else {
+                      logger.debug('Comment: %s', comment)
+                    }
+                  })
+              }
+            }
+          }
+        })
+    })
   })
 }
 
