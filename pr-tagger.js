@@ -4,10 +4,10 @@ const execSync = require('child_process').execSync
 const fs = require('fs')
 const path = require('path')
 
+const Command = require('commander').Command
 const ghauth = require('ghauth')
 const ghissues = require('ghissues')
 const pkgToId = require('pkg-to-id')
-const Command = require('commander').Command
 const semverRegex = require('semver-regex')
 const winston = require('winston')
 
