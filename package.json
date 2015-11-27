@@ -8,6 +8,7 @@
   },
   "scripts": {
     "cover": "istanbul cover _mocha -- test.js",
+    "coveralls": "istanbul cover --report lcovonly _mocha && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard",
     "pretest": "npm run lint",
     "test": "mocha test.js"
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "chai": "3.4.1",
+    "coveralls": "2.11.4",
     "ghooks": "1.0.1",
     "istanbul": "0.4.1",
     "mocha": "2.3.4",
