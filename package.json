@@ -10,7 +10,9 @@
     "cover": "istanbul cover _mocha -- test.js",
     "coveralls": "istanbul cover --report lcovonly _mocha && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard",
+    "postversion": "git push && git push --tags",
     "pretest": "npm run lint",
+    "preversion": "npm test",
     "test": "mocha test.js"
   },
   "repository": {
