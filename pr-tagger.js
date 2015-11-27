@@ -3,7 +3,6 @@
 const execSync = require('child_process').execSync
 const fs = require('fs')
 const path = require('path')
-const util = require('util')
 
 const ghauth = require('ghauth')
 const ghissues = require('ghissues')
@@ -150,7 +149,7 @@ function main () {
 
   const authOptions = {
     configName: pkg.name,
-    note: util.format('%s: %s', pkg.name, pkg.description)
+    note: pkg.name
   }
   writeComments(authOptions, program, prs, toTag)
 }
