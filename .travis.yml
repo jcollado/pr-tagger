@@ -3,3 +3,11 @@ node_js:
 - node
 after_success:
 - npm run coveralls
+deploy:
+  provider: npm
+  email: javier.collado@gmail.com
+  api_key:
+    secure: hspj+jxVsBFKLFVd68d8oKukj9ygGU6AZvuPcrbbh8HVSdheKQ+JJg3yJO0YiB9/AD5T8KylNH4TqN8rQsAA9xqpgxhYL/DOSQbjqv1XrrSqHgCBeUiyPcmsb927ciX7fEZrtPLowecdJwCY5aXEJAXUNlWLQJZCRysVTA4fLJPXG/u4GIITKhvhQMng/Jxs7Y8w4EdHWSKuVZHlhDWMJ0US5fIr9wKkA7J8JbwnA5XJ166LJZHILTeq+Qs7sD0fY2hdAbXKD3ebBIugPc9KehfrTs/HGWQ+FKs7WeGgwix3LKuKHBe1c85osg+1kKL5MdNkUaesumapvoL7mtzkRtMStFR+7wRSVPGqHs4HwlxI692f2TCg3JaOiE4iGX44l1v4lPDy4rPRlx4XJwybw5oS8jvB1Bl3Yml45WR2PNVZm04Ujd7prZ3nvTBgjmjlnWJgwfn5BY3N8UEoqXDtyy4hM0JpgAnzxnxJLBodl+pZ7VFYvrPG7dbwxXQMdMFeBuGFR1kfFqR3/ly3O9WeSJNjNJQIWr6HW5Ifov/tUGaSmZMyeK4eibG5wPwhvMk3Rotfa9h8+2tdYvIW7/cq9HF2iFW60wK5xxsTtiktQU8oX7fGe9jWExYJEE5fhL8UGL60XELrt2asHrxtWHafMIh0bbdYxy30YO8rWG5TRrY=
+  on:
+    tags: true
+    repo: jcollado/pr-tagger
