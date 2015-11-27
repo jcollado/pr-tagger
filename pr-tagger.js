@@ -8,7 +8,7 @@ const util = require('util')
 const ghauth = require('ghauth')
 const ghissues = require('ghissues')
 const pkgToId = require('pkg-to-id')
-const program = require('commander')
+const Command = require('commander').Command
 const semverRegex = require('semver-regex')
 const winston = require('winston')
 
@@ -20,7 +20,7 @@ const logger = new winston.Logger({
 logger.cli()
 
 function parseArguments (defaults) {
-  program
+  const program = new Command()
     .version(defaults.version)
     .description(defaults.description)
     .option('-u, --user [user]', 'GitHub user', defaults.user)
@@ -33,6 +33,8 @@ function parseArguments (defaults) {
     .option('-n --dry-run',
             'Log actions, but skip adding comments to GitHub PRs')
     .parse(process.argv)
+
+  return program
 }
 
 function getMergeCommits (revRange) {
@@ -56,7 +58,7 @@ function getPRs (commits) {
   return prs
 }
 
-function writeComments (authOptions, prs, comment) {
+function writeComments (authOptions, program, prs, comment) {
   ghauth(authOptions, function (error, authData) {
     if (error) {
       logger.error('GitHub Authorization failure: %s', error)
@@ -98,7 +100,7 @@ function main () {
     tag: tags[0],
     logLevel: 'info'
   }
-  parseArguments(defaults)
+  const program = parseArguments(defaults)
 
   logger.level = program.logLevel
   logger.debug('pkgId:', pkgId)
@@ -136,7 +138,7 @@ function main () {
     configName: pkg.name,
     note: util.format('%s: %s', pkg.name, pkg.description)
   }
-  writeComments(authOptions, prs, toTag)
+  writeComments(authOptions, program, prs, toTag)
 }
 
 if (require.main === module) {
