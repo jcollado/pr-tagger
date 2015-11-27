@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "standard",
     "pretest": "npm run lint",
-    "test": "true"
+    "test": "mocha test.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,9 @@
     "winston": "2.1.1"
   },
   "devDependencies": {
+    "chai": "3.4.1",
     "ghooks": "1.0.1",
+    "mocha": "2.3.4",
     "standard": "5.4.1"
   },
   "config": {
