@@ -95,8 +95,14 @@ function main () {
   logger.info('%s v%s', pkg.name, pkg.version)
 
   const pkgFile = path.join(process.cwd(), 'package.json')
-  const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
-  const pkgId = pkgToId(pkgData)
+  let pkgId
+  if (fs.existsSync(pkgFile)) {
+    const pkgData = require(pkgFile)
+    pkgId = pkgToId(pkgData)
+  } else {
+    logger.warn('File not found: %s', pkgFile)
+    pkgId = {}
+  }
   const tags = exec("git tag --sort='-version:refname'")
     .toString().split('\n').filter(tag => semverRegex().test(tag))
 
