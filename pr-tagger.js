@@ -19,7 +19,7 @@ const logger = new winston.Logger({
 })
 logger.cli()
 
-function parseArguments (defaults) {
+function parseArguments (defaults, argv) {
   const program = new Command()
     .version(defaults.version)
     .description(defaults.description)
@@ -32,7 +32,7 @@ function parseArguments (defaults) {
             defaults.logLevel)
     .option('-n --dry-run',
             'Log actions, but skip adding comments to GitHub PRs')
-    .parse(process.argv)
+    .parse(argv)
 
   return program
 }
@@ -100,7 +100,7 @@ function main () {
     tag: tags[0],
     logLevel: 'info'
   }
-  const program = parseArguments(defaults)
+  const program = parseArguments(defaults, process.argv)
 
   logger.level = program.logLevel
   logger.debug('pkgId:', pkgId)
