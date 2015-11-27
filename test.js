@@ -1,7 +1,43 @@
-/* global describe it */
-const expect = require('chai').expect
+/* global describe it before after */
+const childProcess = require('child_process')
 
-const parseArguments = require('./pr-tagger').parseArguments
+const chai = require('chai')
+const proxyquire = require('proxyquire')
+const sinon = require('sinon')
+const sinonChai = require('sinon-chai')
+const expect = chai.expect
+
+chai.use(sinonChai)
+
+const prTagger = require('./pr-tagger')
+const exec = prTagger.exec
+const parseArguments = prTagger.parseArguments
+const logger = prTagger.logger
+
+describe('exec', function () {
+  before('setup spies', function () {
+    proxyquire(
+      './pr-tagger', {
+        childProcess: {
+          execSync: sinon.stub(childProcess, 'execSync')
+        }
+      })
+    sinon.stub(logger, 'debug')
+    sinon.stub(process, 'exit')
+  })
+
+  it('writes the command to the log', function () {
+    const command = 'some command'
+    exec(command)
+    expect(logger.debug).to.have.been.calledWith('Command: %s', command)
+  })
+
+  after('restore spies', function () {
+    childProcess.execSync.restore()
+    logger.debug.restore()
+    process.exit.restore()
+  })
+})
 
 describe('parseArguments', function () {
   const defaults = {

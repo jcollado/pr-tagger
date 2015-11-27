@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict'
-const execSync = require('child_process').execSync
+const childProcess = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
@@ -21,7 +21,7 @@ logger.cli()
 function exec (command) {
   logger.debug('Command: %s', command)
   try {
-    return execSync(command)
+    return childProcess.execSync(command)
   } catch (error) {
     logger.error(error)
     process.exit(1)
@@ -183,5 +183,7 @@ function main () {
 if (require.main === module) {
   main()
 } else {
+  exports.exec = exec
+  exports.logger = logger
   exports.parseArguments = parseArguments
 }
