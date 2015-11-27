@@ -149,7 +149,8 @@ function main () {
 
   const authOptions = {
     configName: pkg.name,
-    note: pkg.name
+    note: pkg.name,
+    scopes: ['repo']
   }
   writeComments(authOptions, program, prs, toTag)
 }
