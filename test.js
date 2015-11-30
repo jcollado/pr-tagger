@@ -32,10 +32,9 @@ describe('exec', function () {
 
   it('writes the command to the log', function () {
     const prTagger = requireInject('./pr-tagger', stubs)
-    const logger = prTagger.logger
 
     prTagger.exec(command)
-    expect(logger.debug).to.have.been.calledWith('Command: %s', command)
+    expect(prTagger.logger.debug).to.have.been.calledWith('Command: %s', command)
   })
 
   it('returns command stdout on success', function () {
