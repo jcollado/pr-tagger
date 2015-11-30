@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict'
-const childProcess = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
@@ -9,24 +8,11 @@ const ghauth = require('ghauth')
 const ghissues = require('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
-const winston = require('winston')
 
+const exec = require('./util').exec
+const logger = require('./logging').logger
+const github = require('./github')
 const pkg = require('./package')
-
-const logger = new winston.Logger({
-  transports: [new winston.transports.Console()]
-})
-logger.cli()
-
-function exec (command) {
-  logger.debug('Command: %s', command)
-  try {
-    return childProcess.execSync(command)
-  } catch (error) {
-    logger.error(error)
-    process.exit(1)
-  }
-}
 
 function parseArguments (defaults, argv) {
   const program = new Command()
@@ -44,25 +30,6 @@ function parseArguments (defaults, argv) {
     .parse(argv)
 
   return program
-}
-
-function getMergeCommits (revRange) {
-  const gitLogCmd = `git log ${revRange} --format='%s' --grep='^Merge pull request #[0-9]\\+ from '`
-  const commits = exec(gitLogCmd).toString().trimRight().split('\n')
-  logger.debug('Commits: %s', commits)
-  return commits
-}
-
-function getPRs (commits) {
-  const prs = commits.map(function (line) {
-    const match = /Merge pull request #(\d+) from /.exec(line)
-    if (match) {
-      return parseInt(match[1], 10)
-    }
-    return false
-  }).filter(Boolean)
-  logger.debug('PRs: %s', prs)
-  return prs
 }
 
 function writeComments (authOptions, program, prs, comment) {
@@ -169,8 +136,8 @@ function main () {
   const fromTag = tags[toTagIndex + 1]
 
   const revRange = (typeof fromTag !== 'undefined') ? `${fromTag}..${toTag}` : toTag
-  const commits = getMergeCommits(revRange)
-  const prs = getPRs(commits)
+  const commits = github.getMergeCommits(revRange)
+  const prs = github.getPRs(commits)
 
   const authOptions = {
     configName: pkg.name,
@@ -184,7 +151,6 @@ if (require.main === module) {
   main()
 } else {
   exports.exec = exec
-  exports.getMergeCommits = getMergeCommits
   exports.logger = logger
   exports.parseArguments = parseArguments
 }

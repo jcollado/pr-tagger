@@ -7,13 +7,13 @@
     "pr-tagger": "./pr-tagger.js"
   },
   "scripts": {
-    "cover": "istanbul cover _mocha -- test.js",
+    "cover": "istanbul cover _mocha -- ./test/*.js",
     "coveralls": "istanbul cover --report lcovonly _mocha && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard",
     "postversion": "git push && git push --tags",
     "pretest": "npm run lint",
     "preversion": "npm test",
-    "test": "mocha test.js"
+    "test": "mocha ./test/*.js"
   },
   "repository": {
     "type": "git",
@@ -46,7 +46,6 @@
     "istanbul": "0.4.1",
     "mocha": "2.3.4",
     "require-inject": "1.3.0",
-    "rewire": "2.5.0",
     "sinon": "1.17.2",
     "sinon-chai": "2.8.0",
     "standard": "5.4.1"
