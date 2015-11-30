@@ -9,9 +9,9 @@ const ghissues = require('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 
-const exec = require('./util').exec
-const logger = require('./logging').logger
-const github = require('./github')
+const exec = require('./lib/util').exec
+const logger = require('./lib/logging').logger
+const github = require('./lib/github')
 const pkg = require('./package')
 
 function parseArguments (defaults, argv) {

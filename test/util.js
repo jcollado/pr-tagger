@@ -26,13 +26,13 @@ describe('exec', function () {
         execSync: sinon.stub()
       }
     }
-    stubs[require.resolve('../logging')] = {
+    stubs[require.resolve('../lib/logging')] = {
       logger
     }
   })
 
   it('writes the command to the log', function () {
-    const exec = requireInject('../util', stubs).exec
+    const exec = requireInject('../lib/util', stubs).exec
 
     exec(command)
     expect(logger.debug).to.have.been.calledWith('Command: %s', command)
@@ -41,7 +41,7 @@ describe('exec', function () {
   it('returns command stdout on success', function () {
     const expectedStdout = 'this is the command stdout'
     stubs.child_process.execSync.returns(expectedStdout)
-    const exec = requireInject('../util', stubs).exec
+    const exec = requireInject('../lib/util', stubs).exec
 
     const stdout = exec(command)
     expect(stdout).to.equal(expectedStdout)
@@ -50,7 +50,7 @@ describe('exec', function () {
   it('logs error and exits on failure', function () {
     const expectedError = new Error('some error')
     stubs.child_process.execSync.throws(expectedError)
-    const util = requireInject('../util', stubs)
+    const util = requireInject('../lib/util', stubs)
 
     sinon.stub(process, 'exit')
     try {
