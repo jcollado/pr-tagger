@@ -19,11 +19,13 @@ describe('exec', function () {
         execSync: sinon.stub()
       },
       winston: {
-        Logger: sinon.stub().returns({
-          cli: sinon.stub(),
-          debug: sinon.stub(),
-          error: sinon.stub()
-        }),
+        Logger: function () {
+          return {
+            cli: sinon.stub(),
+            debug: sinon.stub(),
+            error: sinon.stub()
+          }
+        },
         transports: {
           Console: sinon.stub()
         }
