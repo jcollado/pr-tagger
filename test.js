@@ -122,7 +122,9 @@ describe('getMergeCommits', function () {
   it('returns one commit per line', function () {
     const prTagger = rewire('./pr-tagger')
 
-    prTagger.__set__('exec', sinon.stub().returns(new Buffer('commit 1\ncommit 2\n')))
-    expect(prTagger.getMergeCommits('a..b')).to.equal('commit 1\ncommit 2')
+    prTagger.__set__(
+      'exec', sinon.stub().returns(new Buffer('commit 1\ncommit 2\n')))
+    expect(prTagger.getMergeCommits('a..b'))
+      .to.deep.equal(['commit 1', 'commit 2'])
   })
 })
