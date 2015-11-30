@@ -2,10 +2,11 @@
 'use strict'
 const chai = require('chai')
 const requireInject = require('require-inject')
+const rewire = require('rewire')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const expect = chai.expect
 
+const expect = chai.expect
 chai.use(sinonChai)
 
 describe('exec', function () {
@@ -112,5 +113,14 @@ describe('parseArguments', function () {
     const program = parseArguments(
       defaults, ['<node binary>', '<script>', '-n'])
     expect(program.dryRun).to.be.true
+  })
+})
+
+describe('getMergeCommits', function () {
+  it('returns one commit per line', function () {
+    const prTagger = rewire('./pr-tagger')
+
+    prTagger.__set__('exec', sinon.stub().returns(new Buffer('commit 1\ncommit 2\n')))
+    expect(prTagger.getMergeCommits('a..b')).to.equal('commit 1\ncommit 2')
   })
 })

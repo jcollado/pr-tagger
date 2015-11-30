@@ -184,6 +184,7 @@ if (require.main === module) {
   main()
 } else {
   exports.exec = exec
+  exports.getMergeCommits = getMergeCommits
   exports.logger = logger
   exports.parseArguments = parseArguments
 }
