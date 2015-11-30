@@ -1,4 +1,4 @@
-/* global describe it */
+/* global describe it beforeEach */
 'use strict'
 const chai = require('chai')
 const requireInject = require('require-inject')
@@ -10,21 +10,25 @@ chai.use(sinonChai)
 
 describe('exec', function () {
   const command = 'some command'
+  let stubs
 
-  const stubs = {
-    child_process: {
-      execSync: sinon.stub()
-    },
-    winston: {
-      Logger: sinon.stub().returns({
-        cli: sinon.stub(),
-        debug: sinon.stub()
-      }),
-      transports: {
-        Console: sinon.stub()
+  beforeEach('create stubs', function () {
+    stubs = {
+      child_process: {
+        execSync: sinon.stub()
+      },
+      winston: {
+        Logger: sinon.stub().returns({
+          cli: sinon.stub(),
+          debug: sinon.stub(),
+          error: sinon.stub()
+        }),
+        transports: {
+          Console: sinon.stub()
+        }
       }
     }
-  }
+  })
 
   it('writes the command to the log', function () {
     const prTagger = requireInject('./pr-tagger', stubs)
