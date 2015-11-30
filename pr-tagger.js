@@ -3,34 +3,16 @@
 const fs = require('fs')
 const path = require('path')
 
-const Command = require('commander').Command
 const ghauth = require('ghauth')
 const ghissues = require('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 
 const exec = require('./lib/util').exec
-const logger = require('./lib/logging').logger
 const github = require('./lib/github')
+const logger = require('./lib/logging').logger
+const parseArguments = require('./lib/arguments').parseArguments
 const pkg = require('./package')
-
-function parseArguments (defaults, argv) {
-  const program = new Command()
-    .version(defaults.version)
-    .description(defaults.description)
-    .option('-u, --user [user]', 'GitHub user', defaults.user)
-    .option('-p, --project [project]', 'GitHub project', defaults.project)
-    .option('-t, --tag [tag]', 'Git tag', defaults.tag)
-    .option('-l, --log-level [logLevel]',
-            'Log level',
-            /^(error|warn|info|verbose|debug|silly)$/i,
-            defaults.logLevel)
-    .option('-n --dry-run',
-            'Log actions, but skip adding comments to GitHub PRs')
-    .parse(argv)
-
-  return program
-}
 
 function writeComments (authOptions, program, prs, comment) {
   ghauth(authOptions, function (error, authData) {

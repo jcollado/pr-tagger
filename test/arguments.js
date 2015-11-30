@@ -5,7 +5,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 describe('parseArguments', function () {
-  const parseArguments = require('../pr-tagger').parseArguments
+  const parseArguments = require('../lib/arguments').parseArguments
 
   const defaults = {
     version: 'some version',
