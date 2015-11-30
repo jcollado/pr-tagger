@@ -1,4 +1,4 @@
-/* global describe it before */
+/* global describe it */
 'use strict'
 const chai = require('chai')
 const requireInject = require('require-inject')
@@ -8,32 +8,26 @@ const expect = chai.expect
 
 chai.use(sinonChai)
 
-const prTagger = require('./pr-tagger')
-const parseArguments = prTagger.parseArguments
-
 describe('exec', function () {
-  let prTagger
+  const command = 'some command'
 
-  before('setup spies', function () {
-    prTagger = requireInject(
-      './pr-tagger', {
-        child_process: {
-          execSync: sinon.stub()
-        },
-        winston: {
-          Logger: sinon.stub().returns({
-            cli: sinon.stub(),
-            debug: sinon.stub()
-          }),
-          transports: {
-            Console: sinon.stub()
-          }
-        }
-      })
-  })
+  const stubs = {
+    child_process: {
+      execSync: sinon.stub()
+    },
+    winston: {
+      Logger: sinon.stub().returns({
+        cli: sinon.stub(),
+        debug: sinon.stub()
+      }),
+      transports: {
+        Console: sinon.stub()
+      }
+    }
+  }
 
   it('writes the command to the log', function () {
-    const command = 'some command'
+    const prTagger = requireInject('./pr-tagger', stubs)
     const logger = prTagger.logger
     prTagger.exec(command)
     expect(logger.debug).to.have.been.calledWith('Command: %s', command)
@@ -41,6 +35,8 @@ describe('exec', function () {
 })
 
 describe('parseArguments', function () {
+  const parseArguments = require('./pr-tagger').parseArguments
+
   const defaults = {
     version: 'some version',
     description: 'some description',
