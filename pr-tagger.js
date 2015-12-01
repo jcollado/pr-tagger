@@ -76,8 +76,7 @@ function main () {
     }
   }
 
-  const tags = exec("git tag --sort='-version:refname'")
-    .toString().split('\n').filter(tag => semverRegex().test(tag))
+  const tags = github.getSemverTags()
 
   const defaults = {
     version: pkg.version,
