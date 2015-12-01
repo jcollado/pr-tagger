@@ -90,7 +90,7 @@ function main () {
 
   logger.level = program.logLevel
   logger.debug('url:', url)
-  logger.debug('Tags: %s', tags)
+  logger.debug('Tags: %s', JSON.stringify(tags))
   logger.debug('program:', {
     user: program.user,
     project: program.project,

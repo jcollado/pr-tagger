@@ -7,6 +7,33 @@ const sinon = require('sinon')
 
 const expect = chai.expect
 
+describe('getSemverTags', function () {
+  let stubs
+  let exec
+
+  beforeEach('create stubs', function () {
+    exec = sinon.stub()
+    stubs = {}
+    stubs[require.resolve('../lib/util')] = { exec }
+  })
+
+  it('returns semver tags only in an array', function () {
+    exec.returns(new Buffer('v1.0.0\nnot-semver\nv0.2.1\nv0.2.0\nv0.1.0\n'))
+    const github = requireInject('../lib/github', stubs)
+
+    const tags = github.getSemverTags()
+    expect(tags).to.deep.equal(['v1.0.0', 'v0.2.1', 'v0.2.0', 'v0.1.0'])
+  })
+
+  it('returns empty array when no tags found', function () {
+    exec.returns(new Buffer('not-semver\n'))
+    const github = requireInject('../lib/github', stubs)
+
+    const tags = github.getSemverTags()
+    expect(tags).to.deep.equal([])
+  })
+})
+
 describe('getMergeCommits', function () {
   let stubs
   let exec
