@@ -77,3 +77,44 @@ describe('getPRs', function () {
     expect(prs).to.deep.equal([])
   })
 })
+
+describe('writeComment', function () {
+  let stubs
+  let createComment
+  let logger
+  const pr = 42
+
+  beforeEach('create stubs', function () {
+    createComment = sinon.stub()
+    logger = {
+      debug: sinon.stub(),
+      error: sinon.stub()
+    }
+    stubs = {
+      ghissues: {
+        createComment
+      }
+    }
+    stubs[require.resolve('../lib/logging')] = {
+      logger
+    }
+  })
+
+  it('writes comment object to log on success', function () {
+    createComment.callsArgWith(5, undefined, '<comment object>')
+    const github = requireInject('../lib/github', stubs)
+
+    github.writeComment('auth data', 'user', 'project', pr, 'comment')
+    expect(logger.debug).to.have.been.calledWith('Comment: %s', '<comment object>')
+  })
+
+  it('writes error to log on failure', function () {
+    const expectedError = new Error('some error')
+    createComment.callsArgWith(5, expectedError, undefined)
+    const github = requireInject('../lib/github', stubs)
+
+    github.writeComment('auth data', 'user', 'project', pr, 'comment')
+    expect(logger.error).to.have.been.calledWith(
+      'Error adding comment to PR#%d: %s', pr, expectedError)
+  })
+})
