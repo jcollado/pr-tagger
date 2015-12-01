@@ -40,15 +40,8 @@ function writeComments (authOptions, program, prs, comment) {
             } else {
               logger.info('Adding comment to PR#%d', pr)
               if (!program.dryRun) {
-                ghissues.createComment(
-                  authData, program.user, program.project, pr, comment,
-                  function (error, comment) {
-                    if (error) {
-                      logger.error('Error adding comment to PR#%d: %s', pr, error)
-                    } else {
-                      logger.debug('Comment: %s', comment)
-                    }
-                  })
+                github.writeComment(
+                  authData, program.user, program.project, pr, comment)
               }
             }
           }
