@@ -39,6 +39,25 @@ pr-tagger
 pr-tagger -t <tag>
 ```
 
+## Command line options
+
+- `-u/--user [user]`: GitHub user
+- `-p/--project [project]`: GitHub project
+
+GitHub user and project name fields are extracted from the `package.json` file found in the same directory where the script is invoked. In particular, it's extracted from the `repository.url` field if `repository.type` is set to `git`. If the `package.json` file is not found or the parsing code fails (please open a new [issue](https://github.com/jcollado/pr-tagger/issues/new) if that happens), then it's still possible to use these flags to set the parameters manually.
+
+- `-t/--tag [tag]`: Git tag
+
+The most recent tag is used as the latest commit to look for merge messages by default. If the tag for which comments should be added is not the most recent one, use this option to set it to any semver valid tag present in the repository.
+
+- `-l/--log-level [logLevel]`: Log level
+
+This flag can be used to set the level of verbosity of the output. The default value is `info` which outputs a reasonable amount of information. To troubleshoot problems, `debug` is recommended.
+
+- `-n/--dry-run`: Log actions, but skip adding comments to GitHub PRs
+
+When this option is set, all the actions that the tool would normally do will be performed, except for writing comments to the GitHub pull requests for which no semver comment was found.
+
 ## Contributing
 
 Any contribution is more than welcome. In particular, if:
