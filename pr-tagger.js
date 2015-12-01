@@ -8,7 +8,6 @@ const ghissues = require('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 
-const exec = require('./lib/util').exec
 const github = require('./lib/github')
 const logger = require('./lib/logging').logger
 const parseArguments = require('./lib/arguments').parseArguments
@@ -130,8 +129,4 @@ function main () {
 
 if (require.main === module) {
   main()
-} else {
-  exports.exec = exec
-  exports.logger = logger
-  exports.parseArguments = parseArguments
 }
