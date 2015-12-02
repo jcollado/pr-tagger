@@ -82,7 +82,7 @@ function main () {
     .then(authData => github.writeComments(authData, program, prs, toTag))
     .then(
       () => logger.info('Done!'),
-      (error) => logger.error('Unexpected error: %s', error)
+      error => logger.error('Unexpected error: %s', error)
     )
 }
 
