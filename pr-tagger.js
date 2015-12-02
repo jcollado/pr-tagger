@@ -19,9 +19,10 @@ function writeComments (authOptions, program, prs, comment) {
   ghauth(authOptions).then(
     function (authData) {
       logger.debug('GitHub Authorization success for user: %s', authData.user)
-      prs.forEach(function (pr) {
+
+      return Promise.all(prs.map(function (pr) {
         logger.info('Checking PR#%d comments...', pr)
-        ghissues.listComments(authData, program.user, program.project, pr)
+        return ghissues.listComments(authData, program.user, program.project, pr)
           .then(
             function (commentList) {
               const commentBodies = commentList.map(comment => comment.body)
@@ -44,12 +45,19 @@ function writeComments (authOptions, program, prs, comment) {
             function (error) {
               logger.error('Error checking PR#%d comments: %s', pr, error)
             })
-      })
+      }))
     },
     function (error) {
       logger.error('GitHub Authorization failure: %s', error)
       process.exit(1)
-    })
+    }
+  ).then(
+  function () {
+    logger.info('Done!')
+  },
+  function (error) {
+    logger.error('Unexpected error: %s', error)
+  })
 }
 
 function main () {
