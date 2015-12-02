@@ -121,17 +121,10 @@ function main () {
     scopes: ['repo']
   }
   authorize(authOptions)
+    .then(authData => writeComments(authData, program, prs, toTag))
     .then(
-      function (authData) {
-        return writeComments(authData, program, prs, toTag)
-      })
-    .then(
-      function () {
-        logger.info('Done!')
-      },
-      function (error) {
-        logger.error('Unexpected error: %s', error)
-      }
+      () => logger.info('Done!'),
+      (error) => logger.error('Unexpected error: %s', error)
     )
 }
 
