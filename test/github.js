@@ -80,41 +80,50 @@ describe('getPRs', function () {
 
 describe('writeComment', function () {
   let stubs
-  let createComment
   let logger
   const pr = 42
 
   beforeEach('create stubs', function () {
-    createComment = sinon.stub()
     logger = {
       debug: sinon.stub(),
       error: sinon.stub()
     }
     stubs = {
-      ghissues: {
-        createComment
-      }
+      ghissues: {}
     }
     stubs[require.resolve('../lib/logging')] = {
       logger
     }
   })
 
-  it('writes comment object to log on success', function () {
-    createComment.callsArgWith(5, undefined, '<comment object>')
+  it('writes comment object to log on success', function (done) {
+    const expected = '<comment object>'
+    stubs.ghissues.createComment = function (
+        authData, user, project, pr, comment, cb) {
+      cb(null, expected)
+    }
     const github = requireInject('../lib/github', stubs)
 
-    github.writeComment('auth data', 'user', 'project', pr, 'comment')
-    expect(logger.debug).to.have.been.calledWith('Comment: %s', '<comment object>')
+    github.writeComment('auth data', 'user', 'project', pr, 'comment').then(
+      function () {
+        expect(logger.debug).to.have.been.calledWith('Comment: %s', expected)
+        done()
+      })
   })
 
-  it('writes error to log on failure', function () {
-    const expectedError = new Error('some error')
-    createComment.callsArgWith(5, expectedError, undefined)
+  it('writes error to log on failure', function (done) {
+    const expected = new Error('some error')
+    stubs.ghissues.createComment = function (
+        authData, user, project, pr, comment, cb) {
+      cb(expected, null)
+    }
     const github = requireInject('../lib/github', stubs)
 
-    github.writeComment('auth data', 'user', 'project', pr, 'comment')
-    expect(logger.error).to.have.been.calledWith(
-      'Error adding comment to PR#%d: %s', pr, expectedError)
+    github.writeComment('auth data', 'user', 'project', pr, 'comment').then(
+      function () {
+        expect(logger.error).to.have.been.calledWith(
+          'Error adding comment to PR#%d: %s', pr, expected)
+        done()
+      })
   })
 })
