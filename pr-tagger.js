@@ -15,11 +15,11 @@ const logger = require('./lib/logging').logger
 const parseArguments = require('./lib/arguments').parseArguments
 const pkg = require('./package')
 
-function authorize (authOptions, program, prs, comment) {
+function authorize (authOptions) {
   return ghauth(authOptions).then(
     function (authData) {
       logger.debug('GitHub Authorization success for user: %s', authData.user)
-      return writeComments(authData, program, prs, comment)
+      return authData
     },
     function (error) {
       logger.error('GitHub Authorization failure: %s', error)
@@ -120,14 +120,19 @@ function main () {
     note: pkg.name,
     scopes: ['repo']
   }
-  authorize(authOptions, program, prs, toTag).then(
-    function () {
-      logger.info('Done!')
-    },
-    function (error) {
-      logger.error('Unexpected error: %s', error)
-    }
-  )
+  authorize(authOptions)
+    .then(
+      function (authData) {
+        return writeComments(authData, program, prs, toTag)
+      })
+    .then(
+      function () {
+        logger.info('Done!')
+      },
+      function (error) {
+        logger.error('Unexpected error: %s', error)
+      }
+    )
 }
 
 if (require.main === module) {
