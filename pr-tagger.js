@@ -3,8 +3,10 @@
 const fs = require('fs')
 const path = require('path')
 
-const ghauth = require('ghauth')
-const ghissues = require('ghissues')
+const promisify = require('promisify-node')
+
+const ghauth = promisify('ghauth')
+const ghissues = promisify('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 
@@ -14,40 +16,40 @@ const parseArguments = require('./lib/arguments').parseArguments
 const pkg = require('./package')
 
 function writeComments (authOptions, program, prs, comment) {
-  ghauth(authOptions, function (error, authData) {
-    if (error) {
+  ghauth(authOptions).then(
+    function (authData) {
+      logger.debug('GitHub Authorization success for user: %s', authData.user)
+      prs.forEach(function (pr) {
+        logger.info('Checking PR#%d comments...', pr)
+        ghissues.listComments(authData, program.user, program.project, pr)
+          .then(
+            function (commentList) {
+              const commentBodies = commentList.map(comment => comment.body)
+              const semverComments = commentBodies.filter(function (body) {
+                return semverRegex().test(body)
+              })
+
+              if (semverComments.length > 0) {
+                logger.warn(
+                  'Semver comments found in PR#%d: %s',
+                  pr, JSON.stringify(semverComments))
+              } else {
+                logger.info('Adding comment to PR#%d', pr)
+                if (!program.dryRun) {
+                  github.writeComment(
+                    authData, program.user, program.project, pr, comment)
+                }
+              }
+            },
+            function (error) {
+              logger.error('Error checking PR#%d comments: %s', pr, error)
+            })
+      })
+    },
+    function (error) {
       logger.error('GitHub Authorization failure: %s', error)
       process.exit(1)
-    }
-    logger.debug('GitHub Authorization success for user: %s', authData.user)
-    prs.forEach(function (pr) {
-      logger.info('Checking PR#%d comments...', pr)
-      ghissues.listComments(
-        authData, program.user, program.project, pr,
-        function (error, commentList) {
-          if (error) {
-            logger.error('Error checking PR#%d comments: %s', pr, error)
-          } else {
-            const commentBodies = commentList.map(comment => comment.body)
-            const semverComments = commentBodies.filter(function (body) {
-              return semverRegex().test(body)
-            })
-
-            if (semverComments.length > 0) {
-              logger.warn(
-                'Semver comments found in PR#%d: %s',
-                pr, JSON.stringify(semverComments))
-            } else {
-              logger.info('Adding comment to PR#%d', pr)
-              if (!program.dryRun) {
-                github.writeComment(
-                  authData, program.user, program.project, pr, comment)
-              }
-            }
-          }
-        })
     })
-  })
 }
 
 function main () {
