@@ -37,7 +37,7 @@ function writeComments (authOptions, program, prs, comment) {
               } else {
                 logger.info('Adding comment to PR#%d', pr)
                 if (!program.dryRun) {
-                  github.writeComment(
+                  return github.writeComment(
                     authData, program.user, program.project, pr, comment)
                 }
               }
