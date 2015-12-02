@@ -3,10 +3,6 @@
 const fs = require('fs')
 const path = require('path')
 
-const promisify = require('promisify-node')
-
-const ghauth = promisify('ghauth')
-const ghissues = promisify('ghissues')
 const ghUrl = require('github-url')
 const semverRegex = require('semver-regex')
 
@@ -14,44 +10,6 @@ const github = require('./lib/github')
 const logger = require('./lib/logging').logger
 const parseArguments = require('./lib/arguments').parseArguments
 const pkg = require('./package')
-
-function authorize (authOptions) {
-  return ghauth(authOptions).then(
-    function (authData) {
-      logger.debug('GitHub Authorization success for user: %s', authData.user)
-      return authData
-    },
-    function (error) {
-      logger.error('GitHub Authorization failure: %s', error)
-      process.exit(1)
-    })
-}
-
-function writeComments (authData, program, prs, comment) {
-  return Promise.all(prs.map(function (pr) {
-    logger.info('Checking PR#%d comments...', pr)
-    return ghissues.listComments(authData, program.user, program.project, pr)
-    .then(
-      function (commentList) {
-        const semverComments = github.getSemverComments(commentList)
-
-        if (semverComments.length > 0) {
-          logger.warn(
-            'Semver comments found in PR#%d: %s',
-            pr, JSON.stringify(semverComments))
-        } else {
-          logger.info('Adding comment to PR#%d', pr)
-          if (!program.dryRun) {
-            return github.writeComment(
-              authData, program.user, program.project, pr, comment)
-          }
-        }
-      },
-      function (error) {
-        logger.error('Error checking PR#%d comments: %s', pr, error)
-      })
-  }))
-}
 
 function main () {
   logger.info('%s v%s', pkg.name, pkg.version)
@@ -120,8 +78,8 @@ function main () {
     note: pkg.name,
     scopes: ['repo']
   }
-  authorize(authOptions)
-    .then(authData => writeComments(authData, program, prs, toTag))
+  github.authorize(authOptions)
+    .then(authData => github.writeComments(authData, program, prs, toTag))
     .then(
       () => logger.info('Done!'),
       (error) => logger.error('Unexpected error: %s', error)
