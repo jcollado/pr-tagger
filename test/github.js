@@ -1,4 +1,4 @@
-/* global describe it beforeEach */
+/* global describe it beforeEach afterEach */
 'use strict'
 
 const chai = require('chai')
@@ -75,6 +75,57 @@ describe('getPRs', function () {
   it('return empty array when no commits have been passed', function () {
     const prs = getPRs([])
     expect(prs).to.deep.equal([])
+  })
+})
+
+describe('authorize', function () {
+  let stubs
+  const authOptions = {}
+
+  beforeEach('create stubs', function () {
+    stubs = {
+      ghauth: null
+    }
+    stubs[require.resolve('../lib/logging')] = {
+      logger: {
+        debug: sinon.stub(),
+        error: sinon.stub()
+      }
+    }
+    sinon.stub(process, 'exit')
+  })
+
+  afterEach('restore stubs', function () {
+    process.exit.restore()
+  })
+
+  it('returns authorization data on success', function (done) {
+    const expected = {user: 'some user', token: 'some token'}
+    stubs.ghauth = function (options, cb) {
+      cb(null, expected)
+    }
+    const github = requireInject('../lib/github', stubs)
+
+    github.authorize(authOptions).then(
+      function (authData) {
+        expect(authData).to.equal(expected)
+        done()
+      }
+    )
+  })
+
+  it('exits on failure', function (done) {
+    stubs.ghauth = function (options, cb) {
+      cb(new Error(), null)
+    }
+    const github = requireInject('../lib/github', stubs)
+
+    github.authorize(authOptions).then(
+      function () {
+        expect(process.exit).to.have.been.calledWith(1)
+        done()
+      }
+    )
   })
 })
 
