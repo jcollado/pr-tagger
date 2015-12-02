@@ -127,3 +127,24 @@ describe('writeComment', function () {
       })
   })
 })
+
+describe('getSemverComments', function () {
+  const github = require('../lib/github')
+
+  it('filters semver comments', function () {
+    const commentList = [
+      {body: 'a comment'},
+      {body: 'v0.0.0'},
+      {body: 'another comment'}
+    ]
+
+    expect(github.getSemverComments(commentList))
+      .to.deep.equal(['v0.0.0'])
+  })
+
+  it('returns empty array on no comments', function () {
+    const commentList = []
+    expect(github.getSemverComments(commentList))
+      .to.deep.equal([])
+  })
+})
