@@ -80,10 +80,8 @@ function main () {
   }
   github.authorize(authOptions)
     .then(authData => github.writeComments(authData, program, prs, toTag))
-    .then(
-      () => logger.info('Done!'),
-      error => logger.error('Unexpected error: %s', error)
-    )
+    .then(() => logger.info('Done!'))
+    .catch(error => logger.error('Unexpected error: %s', error))
 }
 
 if (require.main === module) {
