@@ -25,10 +25,7 @@ function writeComments (authOptions, program, prs, comment) {
         return ghissues.listComments(authData, program.user, program.project, pr)
           .then(
             function (commentList) {
-              const commentBodies = commentList.map(comment => comment.body)
-              const semverComments = commentBodies.filter(function (body) {
-                return semverRegex().test(body)
-              })
+              const semverComments = github.getSemverComments(commentList)
 
               if (semverComments.length > 0) {
                 logger.warn(
