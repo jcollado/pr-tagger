@@ -129,6 +129,55 @@ describe('authorize', function () {
   })
 })
 
+describe('writeComments', function () {
+  let stubs
+  let logger
+  const authData = {}
+
+  beforeEach('create stubs', function () {
+    logger = {
+      debug: sinon.stub(),
+      info: sinon.stub(),
+      error: sinon.stub()
+    }
+    stubs = {
+      ghissues: {}
+    }
+    stubs[require.resolve('../lib/logging')] = {
+      logger
+    }
+    stubs[require.resolve('../lib/github')] = {
+      getSemverComments: sinon.stub().returns([])
+    }
+  })
+
+  it('gets comments for each PR', function (done) {
+    const listComments = sinon.spy()
+    stubs.ghissues.listComments = function (
+        authData, user, project, pr, cb) {
+      listComments.apply(this, arguments)
+      cb(null, ['some comment', 'another comment'])
+    }
+    const github = requireInject('../lib/github', stubs)
+    const program = {
+      user: 'some user',
+      project: 'some project',
+      dryRun: true
+    }
+    const prs = [1, 2, 3, 4]
+    const comment = 'some semver tag used as comment'
+
+    github.writeComments(authData, program, prs, comment).then(
+      function (commentList) {
+        prs.forEach(function (pr) {
+          expect(listComments).to.have.been.calledWith(
+            authData, program.user, program.project, pr)
+        })
+        done()
+      })
+  })
+})
+
 describe('writeComment', function () {
   let stubs
   let logger
