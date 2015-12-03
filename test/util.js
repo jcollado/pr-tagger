@@ -16,9 +16,9 @@ describe('exec', function () {
 
   beforeEach('create stubs', function () {
     logger = {
-      cli: sinon.stub(),
-      debug: sinon.stub(),
-      error: sinon.stub()
+      cli: sinon.spy(),
+      debug: sinon.spy(),
+      error: sinon.spy()
     }
 
     stubs = {

@@ -88,8 +88,8 @@ describe('authorize', function () {
     }
     stubs[require.resolve('../lib/logging')] = {
       logger: {
-        debug: sinon.stub(),
-        error: sinon.stub()
+        debug: sinon.spy(),
+        error: sinon.spy()
       }
     }
     sinon.stub(process, 'exit')
@@ -136,9 +136,9 @@ describe('writeComments', function () {
 
   beforeEach('create stubs', function () {
     logger = {
-      debug: sinon.stub(),
-      info: sinon.stub(),
-      error: sinon.stub()
+      debug: sinon.spy(),
+      info: sinon.spy(),
+      error: sinon.spy()
     }
     stubs = {
       ghissues: {}
@@ -185,8 +185,8 @@ describe('writeComment', function () {
 
   beforeEach('create stubs', function () {
     logger = {
-      debug: sinon.stub(),
-      error: sinon.stub()
+      debug: sinon.spy(),
+      error: sinon.spy()
     }
     stubs = {
       ghissues: {}
