@@ -61,47 +61,132 @@ describe('authorize', function () {
 describe('writeComments', function () {
   let stubs
   let logger
+  let getSemverComments
+  let writeComment
+
   const authData = {}
+  let program
+  const prs = [1, 2, 3, 4]
+  const comment = 'some semver tag used as comment'
 
   beforeEach('create stubs', function () {
     logger = {
-      debug: sinon.spy(),
       info: sinon.spy(),
+      warn: sinon.spy(),
       error: sinon.spy()
     }
+    getSemverComments = sinon.stub()
+    writeComment = sinon.stub()
     stubs = {
       ghissues: {}
     }
     stubs[require.resolve('../../lib/logging')] = {
       logger
     }
-    stubs[require.resolve('../../lib/github')] = {
-      getSemverComments: sinon.stub().returns([])
+    stubs[require.resolve('../../lib/github/util')] = {
+      getSemverComments,
+      writeComment
+    }
+
+    program = {
+      user: 'some user',
+      project: 'some project'
     }
   })
 
   it('gets comments for each PR', function (done) {
     const listComments = sinon.spy()
+    getSemverComments.returns([])
     stubs.ghissues.listComments = function (
         authData, user, project, pr, cb) {
       listComments.apply(this, arguments)
       cb(null, ['some comment', 'another comment'])
     }
     const github = requireInject('../../lib/github', stubs)
-    const program = {
-      user: 'some user',
-      project: 'some project',
-      dryRun: true
-    }
-    const prs = [1, 2, 3, 4]
-    const comment = 'some semver tag used as comment'
 
+    program.dryRun = true
     github.writeComments(authData, program, prs, comment).then(
       function (commentList) {
         prs.forEach(function (pr) {
           expect(listComments).to.have.been.calledWith(
             authData, program.user, program.project, pr)
         })
+        done()
+      })
+  })
+
+  it('logs errors when retrieving comments', function (done) {
+    const error = 'some error'
+    stubs.ghissues.listComments = function (
+        authData, user, project, pr, cb) {
+      cb(error, null)
+    }
+    const github = requireInject('../../lib/github', stubs)
+
+    program.dryRun = true
+    github.writeComments(authData, program, prs, comment).then(
+      function (commentList) {
+        prs.forEach(function (pr) {
+          expect(logger.error).to.have.been.calledWith(
+            'Error checking PR#%d comments: %s', pr, error)
+        })
+        done()
+      })
+  })
+
+  it('writes comments if dryRun is not set', function (done) {
+    getSemverComments.returns([])
+    stubs.ghissues.listComments = function (
+        authData, user, project, pr, cb) {
+      cb(null, ['some comment', 'another comment'])
+    }
+    const github = requireInject('../../lib/github', stubs)
+
+    program.dryRun = false
+    github.writeComments(authData, program, prs, comment).then(
+      function (commentList) {
+        prs.forEach(function (pr) {
+          expect(writeComment).to.have.been.calledWith(
+            authData, program.user, program.project, pr, comment)
+        })
+        done()
+      })
+  })
+
+  it('does not write comments if dryRun is set', function (done) {
+    getSemverComments.returns([])
+    stubs.ghissues.listComments = function (
+        authData, user, project, pr, cb) {
+      cb(null, ['some comment', 'another comment'])
+    }
+    const github = requireInject('../../lib/github', stubs)
+
+    program.dryRun = true
+    github.writeComments(authData, program, prs, comment).then(
+      function (commentList) {
+        expect(writeComment).to.not.have.been.called
+        done()
+      })
+  })
+
+  it('does not write comments if semver comments are found', function (done) {
+    const semverComments = ['some semver comment']
+    getSemverComments.returns(semverComments)
+    stubs.ghissues.listComments = function (
+        authData, user, project, pr, cb) {
+      cb(null, ['some comment', 'another comment'])
+    }
+    const github = requireInject('../../lib/github', stubs)
+
+    program.dryRun = false
+    github.writeComments(authData, program, prs, comment).then(
+      function (commentList) {
+        prs.forEach(function (pr) {
+          expect(logger.warn).to.have.been.calledWith(
+            'Semver comments found in PR#%d: %s',
+            pr, JSON.stringify(semverComments))
+        })
+        expect(writeComment).to.not.have.been.called
         done()
       })
   })
