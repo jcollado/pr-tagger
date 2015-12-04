@@ -15,7 +15,7 @@ describe('authorize', function () {
     stubs = {
       ghauth: null
     }
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../../lib/logging')] = {
       logger: {
         debug: sinon.spy(),
         error: sinon.spy()
@@ -33,7 +33,7 @@ describe('authorize', function () {
     stubs.ghauth = function (options, cb) {
       cb(null, expected)
     }
-    const github = requireInject('../lib/github', stubs)
+    const github = requireInject('../../lib/github', stubs)
 
     github.authorize(authOptions).then(
       function (authData) {
@@ -47,7 +47,7 @@ describe('authorize', function () {
     stubs.ghauth = function (options, cb) {
       cb(new Error(), null)
     }
-    const github = requireInject('../lib/github', stubs)
+    const github = requireInject('../../lib/github', stubs)
 
     github.authorize(authOptions).then(
       function () {
@@ -72,10 +72,10 @@ describe('writeComments', function () {
     stubs = {
       ghissues: {}
     }
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../../lib/logging')] = {
       logger
     }
-    stubs[require.resolve('../lib/github')] = {
+    stubs[require.resolve('../../lib/github')] = {
       getSemverComments: sinon.stub().returns([])
     }
   })
@@ -87,7 +87,7 @@ describe('writeComments', function () {
       listComments.apply(this, arguments)
       cb(null, ['some comment', 'another comment'])
     }
-    const github = requireInject('../lib/github', stubs)
+    const github = requireInject('../../lib/github', stubs)
     const program = {
       user: 'some user',
       project: 'some project',
@@ -120,7 +120,7 @@ describe('writeComment', function () {
     stubs = {
       ghissues: {}
     }
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../../lib/logging')] = {
       logger
     }
   })
@@ -131,7 +131,7 @@ describe('writeComment', function () {
         authData, user, project, pr, comment, cb) {
       cb(null, expected)
     }
-    const github = requireInject('../lib/github', stubs)
+    const github = requireInject('../../lib/github', stubs)
 
     github.writeComment('auth data', 'user', 'project', pr, 'comment').then(
       function () {
@@ -146,7 +146,7 @@ describe('writeComment', function () {
         authData, user, project, pr, comment, cb) {
       cb(expected, null)
     }
-    const github = requireInject('../lib/github', stubs)
+    const github = requireInject('../../lib/github', stubs)
 
     github.writeComment('auth data', 'user', 'project', pr, 'comment').then(
       function () {
@@ -158,7 +158,7 @@ describe('writeComment', function () {
 })
 
 describe('getSemverComments', function () {
-  const github = require('../lib/github')
+  const github = require('../../lib/github')
 
   it('filters semver comments', function () {
     const commentList = [
