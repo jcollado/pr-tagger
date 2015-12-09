@@ -20,9 +20,11 @@ describe('main', function () {
   beforeEach('create stubs', function () {
     getUrl = sinon.stub().returns('some url')
     git = {
-      getSemverTags: sinon.stub()
+      getSemverTags: sinon.stub(),
+      getMergeCommits: sinon.stub(),
+      getPRs: sinon.stub()
     }
-    github = sinon.spy()
+    github = {}
     logger = {
       debug: sinon.spy(),
       info: sinon.spy(),
@@ -75,5 +77,29 @@ describe('main', function () {
     expect(main()).to.equal(1)
     expect(logger.error).to.have.been.calledWith(
       'Tag not found in repository: %s', tag)
+  })
+
+  it('writes done to log on success', function (done) {
+    git.getSemverTags.returns(['v1.0.0'])
+    git.getMergeCommits.returns(['a commit', 'another commit'])
+    git.getPRs(['a PR', 'another PR'])
+    const tag = 'v1.0.0'
+    parseArguments.returns({
+      logLevel: 'debug',
+      tag
+    })
+    github.authorize = function () {
+      return Promise.resolve('authorization data')
+    }
+    github.writeComments = function () {
+      return Promise.resolve('prs with comments')
+    }
+    logger.info = sinon.spy(function (message) {
+      if (message === 'Done!') {
+        done()
+      }
+    })
+    const main = requireInject('../lib/main', stubs)
+    expect(main()).to.equal(0)
   })
 })
