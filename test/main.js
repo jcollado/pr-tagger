@@ -94,12 +94,39 @@ describe('main', function () {
     github.writeComments = function () {
       return Promise.resolve('prs with comments')
     }
-    logger.info = sinon.spy(function (message) {
+    logger.info = function (message) {
       if (message === 'Done!') {
         done()
       }
-    })
+    }
     const main = requireInject('../lib/main', stubs)
     expect(main()).to.equal(0)
+  })
+
+  it('writes unexpected error to log on failure', function (done) {
+    git.getSemverTags.returns(['v1.0.0'])
+    git.getMergeCommits.returns(['a commit', 'another commit'])
+    git.getPRs(['a PR', 'another PR'])
+    const tag = 'v1.0.0'
+    parseArguments.returns({
+      logLevel: 'debug',
+      tag
+    })
+    github.authorize = function () {
+      return Promise.resolve('authorization data')
+    }
+    github.writeComments = function () {
+      return Promise.resolve('prs with comments')
+    }
+    logger.info = function () {
+      return Promise.reject('some error')
+    }
+    logger.error = function (message, error) {
+      if (message === 'Unexpected error: %s' && error === 'some error') {
+        done()
+      }
+    }
+    const main = requireInject('../lib/main', stubs)
+    main()
   })
 })
