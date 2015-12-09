@@ -4,5 +4,8 @@
 const main = require('./lib/main')
 
 if (require.main === module) {
-  main()
+  const retcode = main()
+  if (retcode !== 0) {
+    process.exit(retcode)
+  }
 }
