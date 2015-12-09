@@ -63,4 +63,17 @@ describe('main', function () {
     expect(logger.error).to.have.been.calledWith(
       'Tag not semver compliant: %s', tag)
   })
+
+  it('returns when tag is not found in repository', function () {
+    git.getSemverTags.returns(['v1.0.0'])
+    const tag = 'v0.1.0'
+    parseArguments.returns({
+      logLevel: 'debug',
+      tag
+    })
+    const main = requireInject('../lib/main', stubs)
+    expect(main()).to.equal(1)
+    expect(logger.error).to.have.been.calledWith(
+      'Tag not found in repository: %s', tag)
+  })
 })
