@@ -28,9 +28,7 @@ describe('main', function () {
       info: sinon.spy(),
       error: sinon.spy()
     }
-    parseArguments = sinon.stub().returns({
-      logLevel: 'debug'
-    })
+    parseArguments = sinon.stub()
     stubs = {}
     stubs[require.resolve('../lib/arguments')] = {
       parseArguments
@@ -45,10 +43,24 @@ describe('main', function () {
     }
   })
 
-  it('exits when no tags are found in repository', function () {
+  it('returns when no tags are found in repository', function () {
     git.getSemverTags.returns([])
+    parseArguments.returns({logLevel: 'debug'})
     const main = requireInject('../lib/main', stubs)
     expect(main()).to.equal(1)
     expect(logger.error).to.have.been.calledWith('No tags found in repository')
+  })
+
+  it('returns when tag is not semver compliant', function () {
+    git.getSemverTags.returns(['a tag', 'another tag'])
+    const tag = 'not a semver tag'
+    parseArguments.returns({
+      logLevel: 'debug',
+      tag
+    })
+    const main = requireInject('../lib/main', stubs)
+    expect(main()).to.equal(1)
+    expect(logger.error).to.have.been.calledWith(
+      'Tag not semver compliant: %s', tag)
   })
 })
