@@ -63,3 +63,55 @@ describe('exec', function () {
   })
 })
 
+describe('getUrl', function () {
+  let stubs
+  let logger
+  let ghUrl
+  const packagePath = require.resolve('../package')
+
+  beforeEach('create stubs', function () {
+    logger = {
+      cli: sinon.spy(),
+      debug: sinon.spy(),
+      error: sinon.spy()
+    }
+    ghUrl = sinon.stub()
+
+    stubs = {
+      fs: {
+        existsSync: sinon.stub().returns(true)
+      },
+      'github-url': ghUrl,
+      path: {
+        join: sinon.stub().returns(packagePath)
+      }
+    }
+    stubs[require.resolve('../lib/logging')] = {
+      logger
+    }
+  })
+
+  it('parses URL from repository.url field', function () {
+    const util = requireInject('../lib/util', stubs)
+    const expected = {
+      user: 'some user',
+      project: 'some project'
+    }
+    ghUrl.returns(expected)
+    try {
+      require.cache[packagePath] = {
+        exports: {
+          repository: {
+            type: 'git',
+            url: 'some url'
+          }
+        }
+      }
+      const url = util.getUrl()
+      expect(url).to.equal(expected)
+    } finally {
+      delete require.cache[packagePath]
+    }
+    expect(ghUrl).to.have.been.calledWith('some url')
+  })
+})
