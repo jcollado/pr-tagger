@@ -66,20 +66,20 @@ describe('exec', function () {
 describe('getUrl', function () {
   let stubs
   let logger
+  let existsSync
   let ghUrl
   const packagePath = require.resolve('../package')
 
   beforeEach('create stubs', function () {
     logger = {
-      cli: sinon.spy(),
-      debug: sinon.spy(),
-      error: sinon.spy()
+      warn: sinon.spy()
     }
+    existsSync = sinon.stub()
     ghUrl = sinon.stub()
 
     stubs = {
       fs: {
-        existsSync: sinon.stub().returns(true)
+        existsSync
       },
       'github-url': ghUrl,
       path: {
@@ -91,13 +91,39 @@ describe('getUrl', function () {
     }
   })
 
-  it('parses URL from repository.url field', function () {
+  it('returns empty object on file not found', function () {
+    existsSync.returns(false)
     const util = requireInject('../lib/util', stubs)
+
+    const url = util.getUrl()
+    expect(logger.warn).to.have.been.calledWith(
+      'File not found: %s', packagePath)
+    expect(url).to.deep.equal({})
+  })
+
+  it('returns empty object on repository.url field not found', function () {
+    existsSync.returns(true)
+    const util = requireInject('../lib/util', stubs)
+
+    try {
+      require.cache[packagePath] = {exports: {}}
+      const url = util.getUrl()
+      expect(logger.warn).to.have.been.calledWith(
+        'Git repository URL not found')
+      expect(url).to.deep.equal({})
+    } finally {
+      delete require.cache[packagePath]
+    }
+  })
+  it('parses URL from repository.url field', function () {
     const expected = {
       user: 'some user',
       project: 'some project'
     }
+    existsSync.returns(true)
     ghUrl.returns(expected)
+    const util = requireInject('../lib/util', stubs)
+
     try {
       require.cache[packagePath] = {
         exports: {
