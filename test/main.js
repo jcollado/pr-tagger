@@ -45,12 +45,15 @@ describe('main', function () {
     }
   })
 
-  it('returns when no tags are found in repository', function () {
+  it('returns when no tags are found in repository', function (done) {
     git.getSemverTags.returns([])
     parseArguments.returns({logLevel: 'debug'})
     const main = requireInject('../lib/main', stubs)
-    expect(main()).to.equal(1)
-    expect(logger.error).to.have.been.calledWith('No tags found in repository')
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith('No tags found in repository')
+      done()
+    })
   })
 
   it('returns when tag is not semver compliant', function () {
@@ -61,9 +64,11 @@ describe('main', function () {
       tag
     })
     const main = requireInject('../lib/main', stubs)
-    expect(main()).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
-      'Tag not semver compliant: %s', tag)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith(
+        'Tag not semver compliant: %s', tag)
+    })
   })
 
   it('returns when tag is not found in repository', function () {
@@ -74,9 +79,11 @@ describe('main', function () {
       tag
     })
     const main = requireInject('../lib/main', stubs)
-    expect(main()).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
-      'Tag not found in repository: %s', tag)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith(
+        'Tag not found in repository: %s', tag)
+    })
   })
 
   it('writes done to log on success', function (done) {
@@ -100,7 +107,9 @@ describe('main', function () {
       }
     }
     const main = requireInject('../lib/main', stubs)
-    expect(main()).to.equal(0)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(0)
+    })
   })
 
   it('writes unexpected error to log on failure', function (done) {
@@ -115,18 +124,16 @@ describe('main', function () {
     github.authorize = function () {
       return Promise.resolve('authorization data')
     }
+    const error = 'some error'
     github.writeComments = function () {
-      return Promise.resolve('prs with comments')
-    }
-    logger.info = function () {
-      return Promise.reject('some error')
-    }
-    logger.error = function (message, error) {
-      if (message === 'Unexpected error: %s' && error === 'some error') {
-        done()
-      }
+      return Promise.reject(error)
     }
     const main = requireInject('../lib/main', stubs)
-    main()
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith(
+        'Unexpected error: %s', error)
+      done()
+    })
   })
 })
