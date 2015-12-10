@@ -110,7 +110,7 @@ describe('main', function () {
   })
 
   it('writes unexpected error to log on failure', function (done) {
-    git.getSemverTags.returns(['v1.0.0'])
+    git.getSemverTags.returns(['v1.0.0', 'v0.0.1'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
     const tag = 'v1.0.0'
