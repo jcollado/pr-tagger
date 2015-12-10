@@ -14,7 +14,7 @@ This is a command-line tool to help automate this workflow:
 - A new version of the project is released and tagged.
 - A comment is added to every pull request using as content the tag.
 
-Adding a comment with the relased tag to every pull request might be useful in the future to quickly figure out in which version some changes were released. However, it might be tedious to go through the git log to figure out which pull requests where merged in a given release. Fortunately, this can be easily automated and that's exactly what this tool does.
+Adding a comment with the released tag to every pull request might be useful in the future to quickly figure out in which version some changes were released. However, it might be tedious to go through the git log to figure out which pull requests where merged in a given release. Fortunately, this can be easily automated and that's exactly what this tool does.
 
 
 ## Installation
