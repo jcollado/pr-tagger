@@ -101,14 +101,11 @@ describe('main', function () {
     github.writeComments = function () {
       return Promise.resolve('prs with comments')
     }
-    logger.info = function (message) {
-      if (message === 'Done!') {
-        done()
-      }
-    }
     const main = requireInject('../lib/main', stubs)
     main().then(function (retcode) {
       expect(retcode).to.equal(0)
+      expect(logger.info).to.have.been.calledWith('Done!')
+      done()
     })
   })
 
