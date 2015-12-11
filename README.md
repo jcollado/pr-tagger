@@ -58,6 +58,19 @@ This flag can be used to set the level of verbosity of the output. The default v
 
 When this option is set, all the actions that the tool would normally do will be performed, except for writing comments to the GitHub pull requests for which no semver comment was found.
 
+## More automation
+
+There's no need to run `pr-tagger` manually for every new release. Different options to do it automatically are:
+- Use `npm` scripts (`postversion`/`postpublish`)
+- Use an after deploy command in your preferred continuous integration service
+
+For example, `pr-tagger` itself is released using `npm version` as follows:
+- Test cases are executed locally thanks to the `preversion` script
+- A commit is created and tagged (that's what `npm version` does)
+- The commit and the tag are pushed to git using the `postversion` script
+- `pr-tagger` is also executed as part of the `postversion` script
+- The test cases are executed again in travis and the package is published on npm on success
+
 ## Contributing
 
 Any contribution is more than welcome. In particular, if:
