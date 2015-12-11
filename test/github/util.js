@@ -36,7 +36,7 @@ describe('writeComment', function () {
     util.writeComment('auth data', 'user', 'project', pr, 'comment').then(
       function () {
         expect(logger.debug).to.have.been.calledWith(
-          'Comment added to PR#%d: %s', pr, expected)
+          'Comment added to PR#%d: %j', pr, expected)
         done()
       })
   })
