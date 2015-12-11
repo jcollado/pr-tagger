@@ -126,6 +126,9 @@ describe('writeComments', function () {
     program.dryRun = true
     github.writeComments(authData, program, prs, comment).then(
       function (commentList) {
+        commentList.forEach(function (comment) {
+          expect(comment).to.be.null
+        })
         prs.forEach(function (pr) {
           expect(logger.error).to.have.been.calledWith(
             'Error checking PR#%d comments: %s', pr, error)
@@ -140,11 +143,16 @@ describe('writeComments', function () {
         authData, user, project, pr, cb) {
       cb(null, ['some comment', 'another comment'])
     }
+    const expected = 'new comment'
+    writeComment.returns(expected)
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = false
     github.writeComments(authData, program, prs, comment).then(
       function (commentList) {
+        commentList.forEach(function (comment) {
+          expect(comment).to.equal(expected)
+        })
         prs.forEach(function (pr) {
           expect(writeComment).to.have.been.calledWith(
             authData, program.user, program.project, pr, comment)
@@ -164,6 +172,9 @@ describe('writeComments', function () {
     program.dryRun = true
     github.writeComments(authData, program, prs, comment).then(
       function (commentList) {
+        commentList.forEach(function (comment) {
+          expect(comment).to.be.null
+        })
         expect(writeComment).to.not.have.been.called
         done()
       })
@@ -181,6 +192,9 @@ describe('writeComments', function () {
     program.dryRun = false
     github.writeComments(authData, program, prs, comment).then(
       function (commentList) {
+        commentList.forEach(function (comment) {
+          expect(comment).to.be.null
+        })
         prs.forEach(function (pr) {
           expect(logger.warn).to.have.been.calledWith(
             'Semver comments found in PR#%d: %s',
