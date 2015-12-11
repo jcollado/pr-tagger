@@ -86,7 +86,7 @@ describe('main', function () {
     })
   })
 
-  it('writes done to log on success', function (done) {
+  it('logs number of comments written on success', function (done) {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
@@ -98,12 +98,14 @@ describe('main', function () {
     github.authorize = function () {
       return Promise.resolve('authorization data')
     }
+    const newComments = ['a new comment', null, 'another new comment']
     github.writeComments = function () {
-      return Promise.resolve('prs with comments')
+      return Promise.resolve(newComments)
     }
     const main = requireInject('../lib/main', stubs)
     main().then(function (retcode) {
       expect(retcode).to.equal(0)
+      expect(logger.info).to.have.been.calledWith('%d comments written', 2)
       expect(logger.info).to.have.been.calledWith('Done!')
       done()
     })
