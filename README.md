@@ -33,6 +33,11 @@ npm install -g pr-tagger
 pr-tagger
 ```
 
+- Same as above for a project without standard [`repository`](https://docs.npmjs.com/files/package.json#repository) data in its `package.json` file:
+```bash
+pr-tagger -u <user> -p <project>
+```
+
 - Add comment for particular version tag to merged PRs:
 
 ```bash
