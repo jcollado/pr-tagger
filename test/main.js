@@ -45,9 +45,35 @@ describe('main', function () {
     }
   })
 
+  it('returns when user name is not found', function (done) {
+    git.getSemverTags.returns(['a tag', 'another tag'])
+    parseArguments.returns({logLevel: 'debug'})
+    const main = requireInject('../lib/main', stubs)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith(
+        'User name not found in package.json. ' +
+        'Use -u/--user to pass it explicitly.')
+      done()
+    })
+  })
+
+  it('returns when project name is not found', function (done) {
+    git.getSemverTags.returns(['a tag', 'another tag'])
+    parseArguments.returns({logLevel: 'debug', user: 'user'})
+    const main = requireInject('../lib/main', stubs)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(1)
+      expect(logger.error).to.have.been.calledWith(
+        'Project name not found in package.json. ' +
+        'Use -p/--project to pass it explicitly')
+      done()
+    })
+  })
+
   it('returns when no tags are found in repository', function (done) {
     git.getSemverTags.returns([])
-    parseArguments.returns({logLevel: 'debug'})
+    parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
     const main = requireInject('../lib/main', stubs)
     main().then(function (retcode) {
       expect(retcode).to.equal(1)
@@ -56,11 +82,13 @@ describe('main', function () {
     })
   })
 
-  it('returns when tag is not semver compliant', function () {
+  it('returns when tag is not semver compliant', function (done) {
     git.getSemverTags.returns(['a tag', 'another tag'])
     const tag = 'not a semver tag'
     parseArguments.returns({
       logLevel: 'debug',
+      user: 'user',
+      project: 'project',
       tag
     })
     const main = requireInject('../lib/main', stubs)
@@ -68,14 +96,17 @@ describe('main', function () {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not semver compliant: %s', tag)
+      done()
     })
   })
 
-  it('returns when tag is not found in repository', function () {
+  it('returns when tag is not found in repository', function (done) {
     git.getSemverTags.returns(['v1.0.0'])
     const tag = 'v0.1.0'
     parseArguments.returns({
       logLevel: 'debug',
+      user: 'user',
+      project: 'project',
       tag
     })
     const main = requireInject('../lib/main', stubs)
@@ -83,6 +114,7 @@ describe('main', function () {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not found in repository: %s', tag)
+      done()
     })
   })
 
@@ -93,6 +125,8 @@ describe('main', function () {
     const tag = 'v1.0.0'
     parseArguments.returns({
       logLevel: 'debug',
+      user: 'user',
+      project: 'project',
       tag
     })
     github.authorize = function () {
@@ -118,6 +152,8 @@ describe('main', function () {
     const tag = 'v1.0.0'
     parseArguments.returns({
       logLevel: 'debug',
+      user: 'user',
+      project: 'project',
       tag
     })
     github.authorize = function () {
