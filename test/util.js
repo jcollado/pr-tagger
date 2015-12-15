@@ -130,6 +130,21 @@ describe('getUrl', function () {
     })
   })
 
+  it('returns empty object on failure parsing repository in shortcut form', function () {
+    const repositories = [
+      'gist:11081aaa281',
+      'bitbucket:example/repo',
+      'gitlab:another/repo'
+    ]
+
+    repositories.forEach(function (repository) {
+      const pkgData = {repository}
+      injectPkgData(pkgData, function (url) {
+        expect(url).to.deep.equal({})
+      })
+    })
+  })
+
   it('returns empty object on repository type not found', function () {
     const pkgData = {repository: {}}
     injectPkgData(pkgData, function (url) {
