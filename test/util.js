@@ -101,66 +101,54 @@ describe('getUrl', function () {
     expect(url).to.deep.equal({})
   })
 
-  it('returns empty object on repository field not found', function () {
+  function injectPkgData (pkgData, checkFn) {
     existsSync.returns(true)
     const util = requireInject('../lib/util', stubs)
 
     try {
-      require.cache[packagePath] = {exports: {}}
+      require.cache[packagePath] = {exports: pkgData}
       const url = util.getUrl()
+      checkFn(url)
+    } finally {
+      delete require.cache[packagePath]
+    }
+  }
+
+  it('returns empty object on repository field not found', function () {
+    const pkgData = {}
+    injectPkgData(pkgData, function (url) {
       expect(logger.warn).to.have.been.calledWith(
         'Repository field not found in package.json')
       expect(url).to.deep.equal({})
-    } finally {
-      delete require.cache[packagePath]
-    }
+    })
   })
 
   it('returns empty object on repository type not found', function () {
-    existsSync.returns(true)
-    const util = requireInject('../lib/util', stubs)
-
-    try {
-      require.cache[packagePath] = {exports: {repository: {}}}
-      const url = util.getUrl()
+    const pkgData = {repository: {}}
+    injectPkgData(pkgData, function (url) {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type field not found in package.json')
       expect(url).to.deep.equal({})
-    } finally {
-      delete require.cache[packagePath]
-    }
+    })
   })
 
   it('returns empty object on repository type not git', function () {
-    existsSync.returns(true)
-    const util = requireInject('../lib/util', stubs)
     const repositoryType = 'some type'
-
-    try {
-      require.cache[packagePath] = {
-        exports: {repository: {type: repositoryType}}}
-      const url = util.getUrl()
+    const pkgData = {repository: {type: repositoryType}}
+    injectPkgData(pkgData, function (url) {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type is not git in package.json: %s', repositoryType)
       expect(url).to.deep.equal({})
-    } finally {
-      delete require.cache[packagePath]
-    }
+    })
   })
 
   it('returns empty object on repository.url field not found', function () {
-    existsSync.returns(true)
-    const util = requireInject('../lib/util', stubs)
-
-    try {
-      require.cache[packagePath] = {exports: {repository: {type: 'git'}}}
-      const url = util.getUrl()
+    const pkgData = {repository: {type: 'git'}}
+    injectPkgData(pkgData, function (url) {
       expect(logger.warn).to.have.been.calledWith(
         'Repository URL not found in package.json')
       expect(url).to.deep.equal({})
-    } finally {
-      delete require.cache[packagePath]
-    }
+    })
   })
 
   it('parses URL from repository.url field', function () {
@@ -168,24 +156,18 @@ describe('getUrl', function () {
       user: 'some user',
       project: 'some project'
     }
-    existsSync.returns(true)
     ghUrl.returns(expected)
-    const util = requireInject('../lib/util', stubs)
 
-    try {
-      require.cache[packagePath] = {
-        exports: {
-          repository: {
-            type: 'git',
-            url: 'some url'
-          }
-        }
+    const pkgData = {
+      repository: {
+        type: 'git',
+        url: 'some url'
       }
-      const url = util.getUrl()
-      expect(url).to.equal(expected)
-    } finally {
-      delete require.cache[packagePath]
     }
-    expect(ghUrl).to.have.been.calledWith('some url')
+
+    injectPkgData(pkgData, function (url) {
+      expect(url).to.equal(expected)
+    })
+    expect(ghUrl).to.have.been.calledWith(pkgData.repository.url)
   })
 })
