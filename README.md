@@ -1,5 +1,6 @@
 # pr-tagger
 
+[![npm](https://img.shields.io/npm/v/pr-tagger.svg)](https://www.npmjs.com/package/pr-tagger)
 [![Build Status](https://travis-ci.org/jcollado/pr-tagger.svg?branch=master)](https://travis-ci.org/jcollado/pr-tagger)
 [![Coverage Status](https://coveralls.io/repos/jcollado/pr-tagger/badge.svg?branch=master&service=github)](https://coveralls.io/github/jcollado/pr-tagger?branch=master)
 [![Dependency Status](https://david-dm.org/jcollado/pr-tagger.svg)](https://david-dm.org/jcollado/pr-tagger)
