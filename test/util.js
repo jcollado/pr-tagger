@@ -123,6 +123,13 @@ describe('getUrl', function () {
     })
   })
 
+  it('parses URL from repository in shortcut form', function () {
+    const pkgData = {repository: 'user/project'}
+    injectPkgData(pkgData, function (url) {
+      expect(url).to.deep.equal({user: 'user', project: 'project'})
+    })
+  })
+
   it('returns empty object on repository type not found', function () {
     const pkgData = {repository: {}}
     injectPkgData(pkgData, function (url) {
