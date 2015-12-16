@@ -1,4 +1,4 @@
-/* global describe it beforeEach afterEach */
+/* global describe it beforeEach */
 'use strict'
 
 const chai = require('chai')
@@ -28,11 +28,6 @@ describe('authorize', function () {
         error: sinon.spy()
       }
     }
-    sinon.stub(process, 'exit')
-  })
-
-  afterEach('restore stubs', function () {
-    process.exit.restore()
   })
 
   it('returns authorization data on success', function (done) {
@@ -53,15 +48,14 @@ describe('authorize', function () {
     )
   })
 
-  it('exits on failure', function (done) {
+  it('rejects on failure', function (done) {
     stubs.ghauth = function (options, cb) {
       cb(new Error('Bad credentials'), null)
     }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions, program).then(
+    github.authorize(authOptions, program).catch(
       function () {
-        expect(process.exit).to.have.been.calledWith(1)
         done()
       }
     )

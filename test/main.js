@@ -166,8 +166,7 @@ describe('main', function () {
     const main = requireInject('../lib/main', stubs)
     main().then(function (retcode) {
       expect(retcode).to.equal(1)
-      expect(logger.error).to.have.been.calledWith(
-        'Unexpected error: %s', error)
+      expect(logger.error).to.have.been.calledWith(error)
       done()
     })
   })
