@@ -11,12 +11,14 @@ describe('authorize', function () {
   let stubs
   const authOptions = {}
   const program = {
+    name: 'a name',
     user: 'a user',
     project: 'a project'
   }
 
   beforeEach('create stubs', function () {
     stubs = {
+      'application-config': sinon.stub().returns({filePath: 'a path'}),
       ghauth: null,
       ghissues: {}
     }
@@ -53,11 +55,11 @@ describe('authorize', function () {
 
   it('exits on failure', function (done) {
     stubs.ghauth = function (options, cb) {
-      cb(new Error(), null)
+      cb(new Error('Bad credentials'), null)
     }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions).then(
+    github.authorize(authOptions, program).then(
       function () {
         expect(process.exit).to.have.been.calledWith(1)
         done()
