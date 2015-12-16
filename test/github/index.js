@@ -10,10 +10,15 @@ const expect = chai.expect
 describe('authorize', function () {
   let stubs
   const authOptions = {}
+  const program = {
+    user: 'a user',
+    project: 'a project'
+  }
 
   beforeEach('create stubs', function () {
     stubs = {
-      ghauth: null
+      ghauth: null,
+      ghissues: {}
     }
     stubs[require.resolve('../../lib/logging')] = {
       logger: {
@@ -33,10 +38,13 @@ describe('authorize', function () {
     stubs.ghauth = function (options, cb) {
       cb(null, expected)
     }
+    stubs.ghissues.list = function (authData, user, project, cb) {
+      cb(null, ['an issue', 'another issue'])
+    }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions).then(
-      function (authData) {
+    github.authorize(authOptions, program).then(
+      function (authData, user) {
         expect(authData).to.equal(expected)
         done()
       }
