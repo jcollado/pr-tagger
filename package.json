@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/jcollado/pr-tagger#readme",
   "dependencies": {
+    "application-config": "0.2.0",
     "commander": "2.9.0",
     "ghauth": "3.0.0",
     "ghissues": "1.1.2",
