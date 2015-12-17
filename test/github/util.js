@@ -65,11 +65,12 @@ describe('getSemverComments', function () {
     const commentList = [
       {body: 'a comment'},
       {body: 'v0.0.0'},
+      {body: 'v0.1.0'},
       {body: 'another comment'}
     ]
 
     expect(util.getSemverComments(commentList))
-      .to.deep.equal(['v0.0.0'])
+      .to.deep.equal(['v0.0.0', 'v0.1.0'])
   })
 
   it('returns empty array on no comments', function () {
