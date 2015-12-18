@@ -67,9 +67,10 @@ describe('getPRs', function () {
     const prs = getPRs([
       'this is a commit',
       'Merge pull request #42 from ',
+      'Merge pull request #7 from ',
       'this is another commit'
     ])
-    expect(prs).to.deep.equal([42])
+    expect(prs).to.deep.equal([42, 7])
   })
 
   it('return empty array when no commits have been passed', function () {
