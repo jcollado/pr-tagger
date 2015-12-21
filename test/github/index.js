@@ -48,14 +48,30 @@ describe('authorize', function () {
     )
   })
 
-  it('rejects on failure', function (done) {
+  it('rejects on general failure', function (done) {
+    const message = 'some error'
+    stubs.ghauth = function (options, cb) {
+      cb(new Error(message), null)
+    }
+    const github = requireInject('../../lib/github', stubs)
+
+    github.authorize(authOptions, program).catch(
+      function (error) {
+        expect(error).to.equal('GitHub Authorization failure: Error: some error')
+        done()
+      }
+    )
+  })
+
+  it('rejects on bad credentials failure', function (done) {
     stubs.ghauth = function (options, cb) {
       cb(new Error('Bad credentials'), null)
     }
     const github = requireInject('../../lib/github', stubs)
 
     github.authorize(authOptions, program).catch(
-      function () {
+      function (error) {
+        expect(error).to.have.string('To troubleshoot the problem')
         done()
       }
     )
