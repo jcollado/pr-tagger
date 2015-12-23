@@ -125,7 +125,9 @@ describe('getUrl', function () {
 
   it('parses URL from repository in shortcut form', function () {
     const repositories = [
-      'user/project'
+      'user/project',
+      'some-user/project',
+      'user/some-project'
     ]
     repositories.forEach(function (repository) {
       const expected = repository.split('/')
