@@ -124,9 +124,17 @@ describe('getUrl', function () {
   })
 
   it('parses URL from repository in shortcut form', function () {
-    const pkgData = {repository: 'user/project'}
-    injectPkgData(pkgData, function (url) {
-      expect(url).to.deep.equal({user: 'user', project: 'project'})
+    const repositories = [
+      'user/project'
+    ]
+    repositories.forEach(function (repository) {
+      const expected = repository.split('/')
+      const user = expected[0]
+      const project = expected[1]
+      const pkgData = {repository}
+      injectPkgData(pkgData, function (url) {
+        expect(url).to.deep.equal({user, project})
+      })
     })
   })
 
