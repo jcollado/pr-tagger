@@ -82,6 +82,7 @@ describe('writeComments', function () {
   let stubs
   let logger
   let getSemverComments
+  let listComments
   let writeComment
 
   const authData = {}
@@ -97,8 +98,14 @@ describe('writeComments', function () {
     }
     getSemverComments = sinon.stub()
     writeComment = sinon.stub()
+    listComments = sinon.spy()
     stubs = {
-      ghissues: {}
+      ghissues: {
+        listComments: function (authData, user, project, pr, cb) {
+          listComments.apply(this, arguments)
+          cb(null, ['some comment', 'another comment'])
+        }
+      }
     }
     stubs[require.resolve('../../lib/logging')] = {
       logger
@@ -115,13 +122,7 @@ describe('writeComments', function () {
   })
 
   it('gets comments for each PR', function (done) {
-    const listComments = sinon.spy()
     getSemverComments.returns([])
-    stubs.ghissues.listComments = function (
-        authData, user, project, pr, cb) {
-      listComments.apply(this, arguments)
-      cb(null, ['some comment', 'another comment'])
-    }
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = true
@@ -159,10 +160,6 @@ describe('writeComments', function () {
 
   it('writes comments if dryRun is not set', function (done) {
     getSemverComments.returns([])
-    stubs.ghissues.listComments = function (
-        authData, user, project, pr, cb) {
-      cb(null, ['some comment', 'another comment'])
-    }
     const expected = 'new comment'
     writeComment.returns(expected)
     const github = requireInject('../../lib/github', stubs)
@@ -183,10 +180,6 @@ describe('writeComments', function () {
 
   it('does not write comments if dryRun is set', function (done) {
     getSemverComments.returns([])
-    stubs.ghissues.listComments = function (
-        authData, user, project, pr, cb) {
-      cb(null, ['some comment', 'another comment'])
-    }
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = true
@@ -203,10 +196,6 @@ describe('writeComments', function () {
   it('does not write comments if semver comments are found', function (done) {
     const semverComments = ['some semver comment']
     getSemverComments.returns(semverComments)
-    stubs.ghissues.listComments = function (
-        authData, user, project, pr, cb) {
-      cb(null, ['some comment', 'another comment'])
-    }
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = false
