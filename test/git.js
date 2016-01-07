@@ -7,15 +7,18 @@ const sinon = require('sinon')
 
 const expect = chai.expect
 
-describe('getSemverTags', function () {
-  let stubs
-  let exec
-
-  beforeEach('create stubs', function () {
-    exec = sinon.stub()
-    stubs = {}
+function stubExec (stubs, exec) {
+  return function () {
+    exec.reset()
     stubs[require.resolve('../lib/util')] = { exec }
-  })
+  }
+}
+
+describe('getSemverTags', function () {
+  let stubs = {}
+  let exec = sinon.stub()
+
+  beforeEach('create stubs', stubExec(stubs, exec))
 
   it('returns semver tags only in an array', function () {
     exec.returns(new Buffer('v1.0.0\nnot-semver\nv0.2.1\nv0.2.0\nv0.1.0\n'))
@@ -35,14 +38,10 @@ describe('getSemverTags', function () {
 })
 
 describe('getMergeCommits', function () {
-  let stubs
-  let exec
+  let stubs = {}
+  let exec = sinon.stub()
 
-  beforeEach('create stubs', function () {
-    exec = sinon.stub()
-    stubs = {}
-    stubs[require.resolve('../lib/util')] = { exec }
-  })
+  beforeEach('create stubs', stubExec(stubs, exec))
 
   it('returns one commit per line', function () {
     exec.returns(new Buffer('commit 1\ncommit 2\n'))
