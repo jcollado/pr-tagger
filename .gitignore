@@ -28,3 +28,6 @@ node_modules
 
 # vim swap files
 *.swp
+
+# multitest files
+.multitest
