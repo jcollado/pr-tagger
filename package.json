@@ -10,9 +10,10 @@
     "cover": "istanbul cover _mocha -- --recursive ./test",
     "coveralls": "istanbul cover --report lcovonly _mocha -- --recursive ./test && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard",
+    "multitest": "multitest",
     "postversion": "git push && git push --tags && pr-tagger",
     "pretest": "npm run lint",
-    "preversion": "npm test",
+    "preversion": "npm run multitest",
     "test": "mocha --recursive ./test"
   },
   "repository": {
@@ -47,6 +48,7 @@
     "ghooks": "1.0.3",
     "istanbul": "0.4.2",
     "mocha": "2.3.4",
+    "multitest": "0.1.0",
     "require-inject": "1.3.0",
     "sinon": "1.17.2",
     "sinon-chai": "2.8.0",
