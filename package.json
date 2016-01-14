@@ -35,7 +35,7 @@
   "dependencies": {
     "application-config": "0.2.0",
     "commander": "2.9.0",
-    "ghauth": "3.0.0",
+    "ghauth": "3.1.0",
     "ghissues": "1.1.2",
     "github-url": "1.2.0",
     "promisify-node": "0.3.0",
