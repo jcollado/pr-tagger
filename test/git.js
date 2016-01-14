@@ -77,4 +77,3 @@ describe('getPRs', function () {
     expect(prs).to.deep.equal([])
   })
 })
-
