@@ -20,6 +20,16 @@ Adding a comment with the released tag to every pull request might be useful in 
 
 ## Installation
 
+The recommended way to install `pr-tagger` is as a development dependency for a project:
+
+```bash
+npm install --save-dev pr-tagger
+```
+
+and then integrate it in the project workflow as an `npm` script. More information about this in the [configuration section](#configuration) below.
+
+However, when the tool is installed for the first time, it's fine to install it globally and give it a try from the command line:
+
 ```bash
 npm install -g pr-tagger
 ```
@@ -64,7 +74,7 @@ This flag can be used to set the level of verbosity of the output. The default v
 
 When this option is set, all the actions that the tool would normally do will be performed, except for writing comments to the GitHub pull requests for which no semver comment was found.
 
-## More automation
+## Configuration
 
 There's no need to run `pr-tagger` manually for every new release. Different options to do it automatically are:
 - Use `npm` scripts (`postversion`/`postpublish`)
