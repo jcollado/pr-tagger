@@ -85,7 +85,7 @@ For example, `pr-tagger` itself is released using `npm version` as follows:
 - A commit is created and tagged (that's what `npm version` does)
 - The commit and the tag are pushed to git using the `postversion` script
 - `pr-tagger` is also executed as part of the `postversion` script
-- The test cases are executed again in travis and the package is published on npm on success
+- The test cases are executed again in travis and the package is published on `npm` on success
 
 ## Contributing
 
