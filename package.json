@@ -12,6 +12,7 @@
     "lint": "standard",
     "multitest": "multitest",
     "postversion": "git push && git push --tags && pr-tagger",
+    "premultitest": "npm run lint",
     "pretest": "npm run lint",
     "preversion": "npm run multitest",
     "test": "mocha --recursive ./test"
