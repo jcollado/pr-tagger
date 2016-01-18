@@ -119,6 +119,25 @@ describe('main', function () {
     })
   })
 
+  it('gets access token from configuration file by default', function () {
+    git.getSemverTags.returns(['v1.0.0'])
+    git.getMergeCommits.returns(['a commit', 'another commit'])
+    git.getPRs(['a PR', 'another PR'])
+    const tag = 'v1.0.0'
+    parseArguments.returns({
+      logLevel: 'debug',
+      user: 'user',
+      project: 'project',
+      tag
+    })
+    github.authorize.resolves('authorization data')
+    github.writeComments.resolves([])
+    const main = requireInject('../lib/main', stubs)
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
+      expect(retcode).to.equal(0)
+    })
+  })
+
   it('uses access token from command line if passed', function () {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
@@ -132,13 +151,10 @@ describe('main', function () {
       tag
     })
     github.authorize.rejects()
-    const newComments = ['a new comment', null, 'another new comment']
-    github.writeComments.resolves(newComments)
+    github.writeComments.resolves([])
     const main = requireInject('../lib/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
-      expect(logger.info).to.have.been.calledWith('%d comments written', 2)
-      expect(logger.info).to.have.been.calledWith('Done!')
     })
   })
 
@@ -151,9 +167,9 @@ describe('main', function () {
       logLevel: 'debug',
       user: 'user',
       project: 'project',
+      accessToken: 'token',
       tag
     })
-    github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
     github.writeComments.resolves(newComments)
     const main = requireInject('../lib/main', stubs)
@@ -173,9 +189,9 @@ describe('main', function () {
       logLevel: 'debug',
       user: 'user',
       project: 'project',
+      accessToken: 'token',
       tag
     })
-    github.authorize.resolves('authorization data')
     const error = new Error('some error')
     github.writeComments.rejects(error)
     const main = requireInject('../lib/main', stubs)
