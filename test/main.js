@@ -2,11 +2,13 @@
 'use strict'
 
 const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 const requireInject = require('require-inject')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 
 const expect = chai.expect
+chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
 describe('main', function () {
@@ -45,44 +47,41 @@ describe('main', function () {
     }
   })
 
-  it('returns when user name is not found', function (done) {
+  it('returns when user name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug'})
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'User name not found in package.json. ' +
         'Use -u/--user to pass it explicitly.')
-      done()
     })
   })
 
-  it('returns when project name is not found', function (done) {
+  it('returns when project name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug', user: 'user'})
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Project name not found in package.json. ' +
         'Use -p/--project to pass it explicitly')
-      done()
     })
   })
 
-  it('returns when no tags are found in repository', function (done) {
+  it('returns when no tags are found in repository', function () {
     git.getSemverTags.returns([])
     parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith('No tags found in repository')
-      done()
     })
   })
 
-  it('returns when tag is not semver compliant', function (done) {
+  it('returns when tag is not semver compliant', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     const tag = 'not a semver tag'
     parseArguments.returns({
@@ -92,15 +91,14 @@ describe('main', function () {
       tag
     })
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not semver compliant: %s', tag)
-      done()
     })
   })
 
-  it('returns when tag is not found in repository', function (done) {
+  it('returns when tag is not found in repository', function () {
     git.getSemverTags.returns(['v1.0.0'])
     const tag = 'v0.1.0'
     parseArguments.returns({
@@ -110,15 +108,14 @@ describe('main', function () {
       tag
     })
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not found in repository: %s', tag)
-      done()
     })
   })
 
-  it('uses access token from command line if passed', function (done) {
+  it('uses access token from command line if passed', function () {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
@@ -138,15 +135,14 @@ describe('main', function () {
       return Promise.resolve(newComments)
     }
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
       expect(logger.info).to.have.been.calledWith('%d comments written', 2)
       expect(logger.info).to.have.been.calledWith('Done!')
-      done()
     })
   })
 
-  it('logs number of comments written on success', function (done) {
+  it('logs number of comments written on success', function () {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
@@ -165,15 +161,14 @@ describe('main', function () {
       return Promise.resolve(newComments)
     }
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
       expect(logger.info).to.have.been.calledWith('%d comments written', 2)
       expect(logger.info).to.have.been.calledWith('Done!')
-      done()
     })
   })
 
-  it('writes unexpected error to log on failure', function (done) {
+  it('writes unexpected error to log on failure', function () {
     git.getSemverTags.returns(['v1.0.0', 'v0.0.1'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
@@ -192,10 +187,9 @@ describe('main', function () {
       return Promise.reject(error)
     }
     const main = requireInject('../lib/main', stubs)
-    main().then(function (retcode) {
+    return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(error)
-      done()
     })
   })
 })
