@@ -39,7 +39,7 @@
     "ghauth": "3.2.0",
     "ghissues": "1.1.2",
     "github-url": "1.2.0",
-    "promisify-node": "0.3.0",
+    "promisify-object": "1.1.0",
     "semver-regex": "1.0.0",
     "winston": "2.1.1"
   },
