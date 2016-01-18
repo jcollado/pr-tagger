@@ -57,7 +57,8 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "npm test"
+      "pre-commit": "npm test",
+      "pre-push": "npm run multitest"
     }
   }
 }
