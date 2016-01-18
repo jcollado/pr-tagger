@@ -6,6 +6,7 @@ const chaiAsPromised = require('chai-as-promised')
 const requireInject = require('require-inject')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
+require('sinon-as-promised')
 
 const expect = chai.expect
 chai.use(chaiAsPromised)
@@ -26,7 +27,10 @@ describe('main', function () {
       getMergeCommits: sinon.stub(),
       getPRs: sinon.stub()
     }
-    github = {}
+    github = {
+      authorize: sinon.stub(),
+      writeComments: sinon.stub()
+    }
     logger = {
       debug: sinon.spy(),
       info: sinon.spy(),
@@ -127,13 +131,9 @@ describe('main', function () {
       accessToken: 'token',
       tag
     })
-    github.authorize = function () {
-      return Promise.reject()
-    }
+    github.authorize.rejects()
     const newComments = ['a new comment', null, 'another new comment']
-    github.writeComments = function () {
-      return Promise.resolve(newComments)
-    }
+    github.writeComments.resolves(newComments)
     const main = requireInject('../lib/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
@@ -153,13 +153,9 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    github.authorize = function () {
-      return Promise.resolve('authorization data')
-    }
+    github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
-    github.writeComments = function () {
-      return Promise.resolve(newComments)
-    }
+    github.writeComments.resolves(newComments)
     const main = requireInject('../lib/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
@@ -179,13 +175,9 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    github.authorize = function () {
-      return Promise.resolve('authorization data')
-    }
-    const error = 'some error'
-    github.writeComments = function () {
-      return Promise.reject(error)
-    }
+    github.authorize.resolves('authorization data')
+    const error = new Error('some error')
+    github.writeComments.rejects(error)
     const main = requireInject('../lib/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
