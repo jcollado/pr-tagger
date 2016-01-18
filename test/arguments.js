@@ -15,12 +15,14 @@ describe('parseArguments', function () {
     tag: 'some tag',
     logLevel: 'some log level'
   }
-  const properties = ['user', 'project', 'tag', 'logLevel']
+  const properties = ['user', 'project', 'accessToken', 'tag', 'logLevel']
 
   it('uses defaults', function () {
     const program = parseArguments(defaults, [])
     properties.forEach(function (property) {
-      expect(program).to.have.property(property, defaults[property])
+      if (typeof defaults[property] !== 'undefined') {
+        expect(program).to.have.property(property, defaults[property])
+      }
     })
   })
 
@@ -28,6 +30,7 @@ describe('parseArguments', function () {
     const expected = {
       user: 'custom user',
       project: 'custom project',
+      accessToken: 'custom access token',
       tag: 'custom tag',
       logLevel: 'debug'
     }
@@ -35,6 +38,7 @@ describe('parseArguments', function () {
       defaults, ['<node binary>', '<script>',
         '-u', expected.user,
         '-p', expected.project,
+        '-a', expected.accessToken,
         '-t', expected.tag,
         '-l', expected.logLevel
       ])
