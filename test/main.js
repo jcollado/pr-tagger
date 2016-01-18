@@ -118,6 +118,34 @@ describe('main', function () {
     })
   })
 
+  it('uses access token from command line if passed', function (done) {
+    git.getSemverTags.returns(['v1.0.0'])
+    git.getMergeCommits.returns(['a commit', 'another commit'])
+    git.getPRs(['a PR', 'another PR'])
+    const tag = 'v1.0.0'
+    parseArguments.returns({
+      logLevel: 'debug',
+      user: 'user',
+      project: 'project',
+      accessToken: 'token',
+      tag
+    })
+    github.authorize = function () {
+      return Promise.reject()
+    }
+    const newComments = ['a new comment', null, 'another new comment']
+    github.writeComments = function () {
+      return Promise.resolve(newComments)
+    }
+    const main = requireInject('../lib/main', stubs)
+    main().then(function (retcode) {
+      expect(retcode).to.equal(0)
+      expect(logger.info).to.have.been.calledWith('%d comments written', 2)
+      expect(logger.info).to.have.been.calledWith('Done!')
+      done()
+    })
+  })
+
   it('logs number of comments written on success', function (done) {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
