@@ -13,8 +13,7 @@ deploy:
     tags: true
     repo: jcollado/pr-tagger
 after_deploy:
-- npm link
-- pr-tagger --log-level debug --access-token ${GH_TOKEN}
+- ./pr-tagger.js --log-level debug --access-token ${GH_TOKEN}
 env:
   global:
     secure: nTOY4IW7wBN5dk41BamKCnVdvyAYPHhIeHXKh78qANlWxl70XHPVwWDirWoKSmr1NN3mE1XGWWGpgit7tuhO8lUEFtuSclRENmQEfnu85b/Y6Xn27iZ07+/TuXLrF6o7ND5Ufst225FcqgTOUoU0lq+A3jv/eZ2WHubUuKK2AJk8hiK1xF9N7wRCa2EqKBAsO/WwGQjRAB6OOO9n695K3nj64HbhH05IXnztPZUcIYk+5Bou3h9U+i1z5rzzDUQ7B2Hh33x/GM4znWBhpRP5FWNB8Qtw7Rq/eT31ExmDLt8Y8yW1/fOn+ScjTRUV3g73IcrwB/HwjmAtBvuqifJbx11VhQmRuoInP2LHtBwqWQ24Mhnfosd1bqen79To2Tf2tKJ52sN/xepXWyIpy0BbLdQypIeh5Z2RTms/MOveZHhWhQUbqbePhVc53ter08vCri8PdDfqEM82F6QzcF+PBQBUVW8aamY/ob3Qp1HEQRQk1pzBwb9N3zZPEqdHk/lJmxINlMbiwnFnPG4fePujvhGdFTUozocGNwiqyAmvpVJE0p9k4Zj2jiPIXM+92uSld3jhOuhy/+8Z/jtM42t/TqPGrOE6GGJMWMa22vHBgK9nXdzP2sr62fuyTR20pcIC+3P3zTPq5HaM0o3fSPvxSZusZuIx0DoNdDwXgBXUjBs=
