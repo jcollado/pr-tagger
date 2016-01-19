@@ -5,24 +5,22 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const requireInject = require('require-inject')
 const sinon = require('sinon')
+require('sinon-as-promised')
 
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
 describe('github.authorize', function () {
+  let ghauth
+  let checkAuthorization
   let stubs
-  const authOptions = {}
-  const program = {
-    name: 'a name',
-    user: 'a user',
-    project: 'a project'
-  }
+  let program
 
   beforeEach('create stubs', function () {
+    ghauth = sinon.stub()
     stubs = {
       'application-config': sinon.stub().returns({filePath: 'a path'}),
-      ghauth: null,
-      ghissues: {}
+      ghauth
     }
     stubs[require.resolve('../../lib/logging')] = {
       logger: {
@@ -30,27 +28,55 @@ describe('github.authorize', function () {
         error: sinon.spy()
       }
     }
+    checkAuthorization = sinon.stub()
+    stubs[require.resolve('../../lib/github/util')] = {
+      checkAuthorization
+    }
+    program = {
+      name: 'a name',
+      user: 'a user',
+      project: 'a project'
+    }
   })
 
-  it('returns authorization data on success', function () {
+  it('uses token from command line if available', function () {
     const expected = {user: 'some user', token: 'some token'}
-    stubs.ghauth = sinon.stub().yields(null, expected)
-    stubs.ghissues.list = sinon.stub().yields(null, ['an issue', 'another issue'])
+    program.accessToken = 'some token'
+    checkAuthorization.resolves(expected)
     const github = requireInject('../../lib/github', stubs)
 
-    return expect(github.authorize(authOptions, program)).to.be.fulfilled.then(
-      function (authData, user) {
-        expect(authData).to.equal(expected)
-      }
-    )
+    return expect(github.authorize(program)).to.be.fulfilled.then(
+      function (authData) {
+        expect(ghauth).to.not.have.been.called
+      })
+  })
+
+  it('uses token from configuration file by default', function () {
+    ghauth.yields()
+    checkAuthorization.resolves()
+    const github = requireInject('../../lib/github', stubs)
+
+    return expect(github.authorize(program)).to.be.fulfilled.then(
+      function (authData) {
+        expect(ghauth).to.have.been.called
+      })
+  })
+
+  it('resolves to authorization data on success', function () {
+    const expected = {user: 'some user', token: 'some token'}
+    ghauth.yields()
+    checkAuthorization.resolves(expected)
+    const github = requireInject('../../lib/github', stubs)
+
+    return expect(github.authorize(program)).to.eventually.equal(expected)
   })
 
   it('rejects on general failure', function () {
     const message = 'some error'
-    stubs.ghauth = sinon.stub().yields(new Error(message))
+    ghauth.yields(new Error(message))
     const github = requireInject('../../lib/github', stubs)
 
-    return expect(github.authorize(authOptions, program)).to.be.rejected.then(
+    return expect(github.authorize(program)).to.be.rejected.then(
       function (error) {
         expect(error).to.equal('GitHub Authorization failure: Error: some error')
       }
@@ -58,10 +84,10 @@ describe('github.authorize', function () {
   })
 
   it('rejects on bad credentials failure', function () {
-    stubs.ghauth = sinon.stub().yields(new Error('Bad credentials'))
+    ghauth.yields(new Error('Bad credentials'))
     const github = requireInject('../../lib/github', stubs)
 
-    return expect(github.authorize(authOptions, program)).to.be.rejected.then(
+    return expect(github.authorize(program)).to.be.rejected.then(
       function (error) {
         expect(error).to.have.string('To troubleshoot the problem')
       }
