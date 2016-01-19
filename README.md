@@ -46,7 +46,7 @@ pr-tagger
 
 - Same as above for a project without standard [`repository`](https://docs.npmjs.com/files/package.json#repository) data in its `package.json` file:
 ```bash
-pr-tagger -u <user> -p <project>
+pr-tagger -o <owner> -p <project>
 ```
 
 - Add comment for particular version tag to merged PRs:
@@ -57,10 +57,15 @@ pr-tagger -t <tag>
 
 ## Command line options
 
-- `-u/--user [user]`: GitHub user
+- `-o/--owner [user]`: GitHub user
 - `-p/--project [project]`: GitHub project
 
-GitHub user and project name fields are extracted from the `package.json` file found in the same directory where the script is invoked. In particular, it's extracted from the `repository.url` field if `repository.type` is set to `git`. If the `package.json` file is not found or the parsing code fails (please open a new [issue](https://github.com/jcollado/pr-tagger/issues/new) if that happens), then it's still possible to use these flags to set the parameters manually.
+GitHub repository owner and project name fields are extracted from the `package.json` file found in the same directory where the script is invoked. In particular, it's extracted from the `repository.url` field if `repository.type` is set to `git`. If the `package.json` file is not found or the parsing code fails (please open a new [issue](https://github.com/jcollado/pr-tagger/issues/new) if that happens), then it's still possible to use these flags to set the parameters manually.
+
+- `-a/--access-token [token]`: GitHub access token
+- `-u/--user [user]`: GitHub user
+
+GiHub access token and user to access the repository content and be able to write comments in pull requests. By default, if no token is explicitly passed, the user will be prompted to enter GitHub user and password the first time to persist it to a file that will be used in the future.
 
 - `-t/--tag [tag]`: Git tag
 
