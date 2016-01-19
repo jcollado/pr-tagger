@@ -10,12 +10,13 @@ describe('parseArguments', function () {
   const defaults = {
     version: 'some version',
     description: 'some description',
-    user: 'some user',
+    owner: 'some owner',
     project: 'some project',
+    user: 'some user',
     tag: 'some tag',
     logLevel: 'some log level'
   }
-  const properties = ['user', 'project', 'accessToken', 'tag', 'logLevel']
+  const properties = ['owner', 'project', 'user', 'accessToken', 'tag', 'logLevel']
 
   it('uses defaults', function () {
     const program = parseArguments(defaults, [])
@@ -28,8 +29,9 @@ describe('parseArguments', function () {
 
   it('parses arguments as expected', function () {
     const expected = {
-      user: 'custom user',
+      owner: 'some owner',
       project: 'custom project',
+      user: 'custom user',
       accessToken: 'custom access token',
       tag: 'custom tag',
       logLevel: 'debug'

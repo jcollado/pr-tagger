@@ -130,7 +130,7 @@ describe('writeComments', function () {
       function (commentList) {
         prs.forEach(function (pr) {
           expect(listComments).to.have.been.calledWith(
-            authData, program.user, program.project, pr)
+            authData, program.owner, program.project, pr)
         })
         done()
       })
@@ -172,7 +172,7 @@ describe('writeComments', function () {
         })
         prs.forEach(function (pr) {
           expect(writeComment).to.have.been.calledWith(
-            authData, program.user, program.project, pr, comment)
+            authData, program.owner, program.project, pr, comment)
         })
         done()
       })
