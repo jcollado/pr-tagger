@@ -10,6 +10,7 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 
 describe('writeComment', function () {
+  let createComment
   let stubs
   let logger
   const pr = 42
@@ -19,8 +20,11 @@ describe('writeComment', function () {
       debug: sinon.spy(),
       error: sinon.spy()
     }
+    createComment = sinon.stub()
     stubs = {
-      ghissues: {}
+      ghissues: {
+        createComment
+      }
     }
     stubs[require.resolve('../../lib/logging')] = {
       logger
@@ -29,10 +33,7 @@ describe('writeComment', function () {
 
   it('writes comment object to log on success', function () {
     const expected = '<comment object>'
-    stubs.ghissues.createComment = function (
-        authData, user, project, pr, comment, cb) {
-      cb(null, expected)
-    }
+    createComment.yields(null, expected)
     const util = requireInject('../../lib/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
@@ -44,10 +45,7 @@ describe('writeComment', function () {
 
   it('writes error to log on failure', function () {
     const expected = new Error('some error')
-    stubs.ghissues.createComment = function (
-        authData, user, project, pr, comment, cb) {
-      cb(expected, null)
-    }
+    createComment.yields(expected)
     const util = requireInject('../../lib/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
