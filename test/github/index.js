@@ -9,7 +9,7 @@ const sinon = require('sinon')
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
-describe('authorize', function () {
+describe('github.authorize', function () {
   let stubs
   const authOptions = {}
   const program = {
@@ -69,7 +69,7 @@ describe('authorize', function () {
   })
 })
 
-describe('writeComments', function () {
+describe('github.writeComments', function () {
   let stubs
   let logger
   let getSemverComments

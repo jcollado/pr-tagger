@@ -14,7 +14,7 @@ function stubExec (stubs, exec) {
   }
 }
 
-describe('getSemverTags', function () {
+describe('git.getSemverTags', function () {
   let stubs = {}
   let exec = sinon.stub()
 
@@ -37,7 +37,7 @@ describe('getSemverTags', function () {
   })
 })
 
-describe('getMergeCommits', function () {
+describe('git.getMergeCommits', function () {
   let stubs = {}
   let exec = sinon.stub()
 
@@ -59,7 +59,7 @@ describe('getMergeCommits', function () {
   })
 })
 
-describe('getPRs', function () {
+describe('git.getPRs', function () {
   const getPRs = require('../lib/git').getPRs
 
   it('filters commits with PRs', function () {

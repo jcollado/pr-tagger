@@ -9,7 +9,7 @@ const sinonChai = require('sinon-chai')
 const expect = chai.expect
 chai.use(sinonChai)
 
-describe('exec', function () {
+describe('util.exec', function () {
   const command = 'some command'
   let stubs
   let logger
@@ -63,7 +63,7 @@ describe('exec', function () {
   })
 })
 
-describe('getUrl', function () {
+describe('util.getUrl', function () {
   let stubs
   let logger
   let existsSync

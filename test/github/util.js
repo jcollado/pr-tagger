@@ -9,7 +9,7 @@ const sinon = require('sinon')
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
-describe('writeComment', function () {
+describe('github.util.writeComment', function () {
   let createComment
   let stubs
   let logger
@@ -56,7 +56,7 @@ describe('writeComment', function () {
   })
 })
 
-describe('getSemverComments', function () {
+describe('github.util.getSemverComments', function () {
   const util = require('../../lib/github/util')
 
   it('filters semver comments', function () {
