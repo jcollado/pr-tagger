@@ -2,9 +2,11 @@
 'use strict'
 
 const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 const requireInject = require('require-inject')
 const sinon = require('sinon')
 
+chai.use(chaiAsPromised)
 const expect = chai.expect
 
 describe('writeComment', function () {
@@ -25,7 +27,7 @@ describe('writeComment', function () {
     }
   })
 
-  it('writes comment object to log on success', function (done) {
+  it('writes comment object to log on success', function () {
     const expected = '<comment object>'
     stubs.ghissues.createComment = function (
         authData, user, project, pr, comment, cb) {
@@ -33,15 +35,14 @@ describe('writeComment', function () {
     }
     const util = requireInject('../../lib/github/util', stubs)
 
-    util.writeComment('auth data', 'user', 'project', pr, 'comment').then(
-      function () {
+    return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
+      .to.be.fulfilled.then(function () {
         expect(logger.debug).to.have.been.calledWith(
           'Comment added to PR#%d: %s', pr, JSON.stringify(expected))
-        done()
       })
   })
 
-  it('writes error to log on failure', function (done) {
+  it('writes error to log on failure', function () {
     const expected = new Error('some error')
     stubs.ghissues.createComment = function (
         authData, user, project, pr, comment, cb) {
@@ -49,11 +50,10 @@ describe('writeComment', function () {
     }
     const util = requireInject('../../lib/github/util', stubs)
 
-    util.writeComment('auth data', 'user', 'project', pr, 'comment').then(
-      function () {
+    return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
+      .to.be.fulfilled.then(function () {
         expect(logger.error).to.have.been.calledWith(
           'Error adding comment to PR#%d: %s', pr, expected)
-        done()
       })
   })
 })

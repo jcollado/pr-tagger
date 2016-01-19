@@ -2,9 +2,11 @@
 'use strict'
 
 const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 const requireInject = require('require-inject')
 const sinon = require('sinon')
 
+chai.use(chaiAsPromised)
 const expect = chai.expect
 
 describe('authorize', function () {
@@ -30,7 +32,7 @@ describe('authorize', function () {
     }
   })
 
-  it('returns authorization data on success', function (done) {
+  it('returns authorization data on success', function () {
     const expected = {user: 'some user', token: 'some token'}
     stubs.ghauth = function (options, cb) {
       cb(null, expected)
@@ -40,39 +42,36 @@ describe('authorize', function () {
     }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions, program).then(
+    return expect(github.authorize(authOptions, program)).to.be.fulfilled.then(
       function (authData, user) {
         expect(authData).to.equal(expected)
-        done()
       }
     )
   })
 
-  it('rejects on general failure', function (done) {
+  it('rejects on general failure', function () {
     const message = 'some error'
     stubs.ghauth = function (options, cb) {
       cb(new Error(message), null)
     }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions, program).catch(
+    return expect(github.authorize(authOptions, program)).to.be.rejected.then(
       function (error) {
         expect(error).to.equal('GitHub Authorization failure: Error: some error')
-        done()
       }
     )
   })
 
-  it('rejects on bad credentials failure', function (done) {
+  it('rejects on bad credentials failure', function () {
     stubs.ghauth = function (options, cb) {
       cb(new Error('Bad credentials'), null)
     }
     const github = requireInject('../../lib/github', stubs)
 
-    github.authorize(authOptions, program).catch(
+    return expect(github.authorize(authOptions, program)).to.be.rejected.then(
       function (error) {
         expect(error).to.have.string('To troubleshoot the problem')
-        done()
       }
     )
   })
@@ -121,22 +120,21 @@ describe('writeComments', function () {
     }
   })
 
-  it('gets comments for each PR', function (done) {
+  it('gets comments for each PR', function () {
     getSemverComments.returns([])
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = true
-    github.writeComments(authData, program, prs, comment).then(
-      function (commentList) {
+    return expect(github.writeComments(authData, program, prs, comment))
+      .to.be.fulfilled.then(function (commentList) {
         prs.forEach(function (pr) {
           expect(listComments).to.have.been.calledWith(
             authData, program.owner, program.project, pr)
         })
-        done()
       })
   })
 
-  it('logs errors when retrieving comments', function (done) {
+  it('logs errors when retrieving comments', function () {
     const error = 'some error'
     stubs.ghissues.listComments = function (
         authData, user, project, pr, cb) {
@@ -145,8 +143,8 @@ describe('writeComments', function () {
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = true
-    github.writeComments(authData, program, prs, comment).then(
-      function (commentList) {
+    return expect(github.writeComments(authData, program, prs, comment))
+      .to.be.fulfilled.then(function (commentList) {
         commentList.forEach(function (comment) {
           expect(comment).to.be.null
         })
@@ -154,19 +152,18 @@ describe('writeComments', function () {
           expect(logger.error).to.have.been.calledWith(
             'Error checking PR#%d comments: %s', pr, error)
         })
-        done()
       })
   })
 
-  it('writes comments if dryRun is not set', function (done) {
+  it('writes comments if dryRun is not set', function () {
     getSemverComments.returns([])
     const expected = 'new comment'
     writeComment.returns(expected)
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = false
-    github.writeComments(authData, program, prs, comment).then(
-      function (commentList) {
+    return expect(github.writeComments(authData, program, prs, comment))
+      .to.be.fulfilled.then(function (commentList) {
         commentList.forEach(function (comment) {
           expect(comment).to.equal(expected)
         })
@@ -174,33 +171,31 @@ describe('writeComments', function () {
           expect(writeComment).to.have.been.calledWith(
             authData, program.owner, program.project, pr, comment)
         })
-        done()
       })
   })
 
-  it('does not write comments if dryRun is set', function (done) {
+  it('does not write comments if dryRun is set', function () {
     getSemverComments.returns([])
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = true
-    github.writeComments(authData, program, prs, comment).then(
-      function (commentList) {
+    return expect(github.writeComments(authData, program, prs, comment))
+      .to.be.fulfilled.then(function (commentList) {
         commentList.forEach(function (comment) {
           expect(comment).to.be.null
         })
         expect(writeComment).to.not.have.been.called
-        done()
       })
   })
 
-  it('does not write comments if semver comments are found', function (done) {
+  it('does not write comments if semver comments are found', function () {
     const semverComments = ['some semver comment']
     getSemverComments.returns(semverComments)
     const github = requireInject('../../lib/github', stubs)
 
     program.dryRun = false
-    github.writeComments(authData, program, prs, comment).then(
-      function (commentList) {
+    return expect(github.writeComments(authData, program, prs, comment))
+      .to.be.fulfilled.then(function (commentList) {
         commentList.forEach(function (comment) {
           expect(comment).to.be.null
         })
@@ -210,7 +205,6 @@ describe('writeComments', function () {
             pr, JSON.stringify(semverComments))
         })
         expect(writeComment).to.not.have.been.called
-        done()
       })
   })
 })
