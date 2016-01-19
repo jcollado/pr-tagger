@@ -90,7 +90,7 @@ The `postversion` script can be used to push changes and tags to the GitHub repo
 ```json
 {
   "scripts": {
-    "postversion": "git push && git push --tags && pr-tagger",
+    "postversion": "git push && git push --tags && pr-tagger"
   }
 }
 ```
