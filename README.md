@@ -57,15 +57,15 @@ pr-tagger -t <tag>
 
 ## Command line options
 
-- `-o/--owner [user]`: GitHub user
 - `-p/--project [project]`: GitHub project
+- `-o/--owner [user]`: GitHub repository owner
 
-GitHub repository owner and project name fields are extracted from the `package.json` file found in the same directory where the script is invoked. In particular, it's extracted from the `repository.url` field if `repository.type` is set to `git`. If the `package.json` file is not found or the parsing code fails (please open a new [issue](https://github.com/jcollado/pr-tagger/issues/new) if that happens), then it's still possible to use these flags to set the parameters manually.
+GitHub repository owner and project name fields are extracted from the `package.json` file found in the same directory where the script is invoked. In particular, they are extracted from the `repository.url` field if `repository.type` is set to `git`. If the `package.json` file is not found or the parsing code fails (please open a new [issue](https://github.com/jcollado/pr-tagger/issues/new) if that happens), then it's still possible to use these flags to set the parameters manually.
 
 - `-a/--access-token [token]`: GitHub access token
 - `-u/--user [user]`: GitHub user
 
-GiHub access token and user to access the repository content and be able to write comments in pull requests. By default, if no token is explicitly passed, the user will be prompted to enter GitHub user and password the first time to persist it to a file that will be used in the future.
+GiHub access token and user to access the repository content and be able to write comments in pull requests. By default, if no token is explicitly passed, the user will be prompted to enter GitHub user and password the first time to persist it to a file that will be used in the future. The `-a/--access-token` option is specially useful in continuous integration environments, where no configuration file will be persisted, as described in the [configuration section](#configuration) below.
 
 - `-t/--tag [tag]`: Git tag
 
@@ -81,16 +81,42 @@ When this option is set, all the actions that the tool would normally do will be
 
 ## Configuration
 
-There's no need to run `pr-tagger` manually for every new release. Different options to do it automatically are:
-- Use `npm` scripts (`postversion`/`postpublish`)
-- Use an after deploy command in your preferred continuous integration service
+Despite `pr-tagger` can be manually executed after every new release, there's no need to do so. Available alternatives are:
 
-For example, `pr-tagger` itself is released using `npm version` as follows:
-- Test cases are executed locally thanks to the `preversion` script
-- A commit is created and tagged (that's what `npm version` does)
-- The commit and the tag are pushed to git using the `postversion` script
-- `pr-tagger` is also executed as part of the `postversion` script
-- The test cases are executed again in travis and the package is published on `npm` on success
+- `npm` scripts
+
+The `postversion` script can be used to push changes and tags to the GitHub repository and add comments to pull requests with `pr-tagger` as follows:
+
+```json
+{
+  "scripts": {
+    "postversion": "git push && git push --tags && pr-tagger",
+  }
+}
+```
+
+Similarly, the `postpublish` script could be used as well with the same purpose.
+
+- Deploy command in contiuous integration
+
+For example, if you're using travis, `pr-tagger` can be configured to run after deployment to `npm` like this:
+
+```yaml
+after_deploy:
+- pr-tagger --access-token ${GH_TOKEN}
+env:
+  global:
+    secure: <encripted_value>
+```
+
+where the `GH_TOKEN` environment variable is set in the job configuration using the [`travis`](https://github.com/travis-ci/travis.rb#readme) command line tool:
+
+```bash
+travis encrypt GH_TOKEN=<value> --add
+```
+
+Alternatively, the web client also allows to enter environment variable values in the job configuration page.
+
 
 ## Contributing
 
