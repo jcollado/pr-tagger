@@ -123,13 +123,12 @@ describe('main', function () {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
-    const tag = 'v1.0.0'
     parseArguments.returns({
       logLevel: 'debug',
       user: 'user',
       project: 'project',
       accessToken: 'token',
-      tag
+      tag: 'v1.0.0'
     })
     github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
@@ -146,13 +145,12 @@ describe('main', function () {
     git.getSemverTags.returns(['v1.0.0', 'v0.0.1'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
     git.getPRs(['a PR', 'another PR'])
-    const tag = 'v1.0.0'
     parseArguments.returns({
       logLevel: 'debug',
       user: 'user',
       project: 'project',
       accessToken: 'token',
-      tag
+      tag: 'v1.0.0'
     })
     github.authorize.resolves('authorization data')
     const error = new Error('some error')
