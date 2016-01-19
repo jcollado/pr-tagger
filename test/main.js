@@ -119,58 +119,6 @@ describe('main', function () {
     })
   })
 
-  it('gets access token from configuration file by default', function () {
-    git.getSemverTags.returns(['v1.0.0'])
-    git.getMergeCommits.returns(['a commit', 'another commit'])
-    const prs = ['a PR', 'another PR']
-    git.getPRs.returns(prs)
-    const tag = 'v1.0.0'
-    const program = {
-      logLevel: 'debug',
-      user: 'user',
-      project: 'project',
-      tag
-    }
-    parseArguments.returns(program)
-    const authData = {user: program.user, token: 'access token'}
-    github.authorize.resolves(authData)
-    github.writeComments.resolves([])
-    const main = requireInject('../lib/main', stubs)
-    return expect(main()).to.be.fulfilled.then(function (retcode) {
-      expect(retcode).to.equal(0)
-      expect(github.writeComments).to.have.been.calledWith(
-        authData, program, prs, tag)
-    })
-  })
-
-  it('uses access token from command line if passed', function () {
-    git.getSemverTags.returns(['v1.0.0'])
-    git.getMergeCommits.returns(['a commit', 'another commit'])
-    const prs = ['a PR', 'another PR']
-    git.getPRs.returns(prs)
-    const tag = 'v1.0.0'
-    const program = {
-      logLevel: 'debug',
-      user: 'user',
-      project: 'project',
-      accessToken: 'access token',
-      tag
-    }
-    parseArguments.returns(program)
-    github.authorize.rejects()
-    github.writeComments.resolves([])
-    const main = requireInject('../lib/main', stubs)
-    return expect(main()).to.be.fulfilled.then(function (retcode) {
-      expect(retcode).to.equal(0)
-      const authData = {
-        user: program.user,
-        token: program.accessToken
-      }
-      expect(github.writeComments).to.have.been.calledWith(
-        authData, program, prs, tag)
-    })
-  })
-
   it('logs number of comments written on success', function () {
     git.getSemverTags.returns(['v1.0.0'])
     git.getMergeCommits.returns(['a commit', 'another commit'])
@@ -183,6 +131,7 @@ describe('main', function () {
       accessToken: 'token',
       tag
     })
+    github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
     github.writeComments.resolves(newComments)
     const main = requireInject('../lib/main', stubs)
@@ -205,6 +154,7 @@ describe('main', function () {
       accessToken: 'token',
       tag
     })
+    github.authorize.resolves('authorization data')
     const error = new Error('some error')
     github.writeComments.rejects(error)
     const main = requireInject('../lib/main', stubs)
