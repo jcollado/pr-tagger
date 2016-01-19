@@ -21,7 +21,7 @@ describe('git.getSemverTags', function () {
   beforeEach('create stubs', stubExec(stubs, exec))
 
   it('returns semver tags only in an array', function () {
-    exec.returns(new Buffer('v1.0.0\nnot-semver\nv0.2.1\nv0.2.0\nv0.1.0\n'))
+    exec.returns(new Buffer('v0.1.0\nnot-semver\nv0.2.0\nv0.2.1\nv1.0.0\n'))
     const git = requireInject('../lib/git', stubs)
 
     const tags = git.getSemverTags()
