@@ -77,3 +77,32 @@ describe('github.util.getSemverComments', function () {
       .to.deep.equal([])
   })
 })
+
+describe('github.util.checkAuthorization', function () {
+  let list
+  let stubs
+
+  beforeEach(function () {
+    list = sinon.stub()
+    stubs = {
+      ghissues: {
+        list
+      }
+    }
+  })
+
+  it('resolves if issues can be retrieved', function () {
+    const authData = 'authorization data'
+    list.yields()
+    const util = requireInject('../../lib/github/util', stubs)
+    return expect(util.checkAuthorization(authData, 'program'))
+      .to.eventually.equal(authData)
+  })
+
+  it("rejects if issues list can't be retrieved", function () {
+    list.yields(new Error('some error'))
+    const util = requireInject('../../lib/github/util', stubs)
+    return expect(util.checkAuthorization('authorization data', 'program'))
+      .to.be.rejected
+  })
+})
