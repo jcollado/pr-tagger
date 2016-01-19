@@ -65,7 +65,7 @@ GitHub repository owner and project name fields are extracted from the `package.
 - `-a/--access-token [token]`: GitHub access token
 - `-u/--user [user]`: GitHub user
 
-GiHub access token and user to access the repository content and be able to write comments in pull requests. By default the GitHub user is assumed to be the same one as repository owner and the access token is `undefined`. If no token is explicitly passed, the user will be prompted to enter GitHub user and password the first time to persist it to a file that will be used in the future without asking the user again for any password. The `-a/--access-token` option is specially useful in continuous integration environments, where no configuration file will be persisted, as described in the [configuration section](#configuration) below.
+GiHub access token and user to access the repository content and be able to write comments in pull requests. By default the GitHub user is assumed to be the same one as the repository owner and the access token is `undefined`. If no token is explicitly passed, the user will be prompted to enter GitHub user and password the first time to persist it to a file that will be used in the future without asking the user again for any password. The `-a/--access-token` option is specially useful in continuous integration environments, where no configuration file will be persisted, as described in the [configuration section](#configuration) below.
 
 - `-t/--tag [tag]`: Git tag
 
