@@ -11,7 +11,7 @@
     "coveralls": "istanbul cover --report lcovonly _mocha -- --recursive ./test && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard",
     "multitest": "multitest",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push --follow-tags",
     "premultitest": "npm run lint",
     "pretest": "npm run lint",
     "preversion": "npm run multitest",
