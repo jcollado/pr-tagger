@@ -1,6 +1,6 @@
 {
   "name": "pr-tagger",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Add comment to PRs in GitHub with version tag for latest release",
   "main": "pr-tagger.js",
   "bin": {
