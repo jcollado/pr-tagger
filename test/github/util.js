@@ -64,11 +64,16 @@ describe('github.util.getSemverComments', function () {
       {body: 'a comment'},
       {body: 'v0.0.0'},
       {body: 'v0.1.0'},
-      {body: 'another comment'}
+      {body: 'another comment'},
+      {body: 'semver v0.2.0 embedded in a comment'}
     ]
 
     expect(util.getSemverComments(commentList))
-      .to.deep.equal(['v0.0.0', 'v0.1.0'])
+      .to.deep.equal([
+        'v0.0.0',
+        'v0.1.0',
+        'semver v0.2.0 embedded in a comment'
+      ])
   })
 
   it('returns empty array on no comments', function () {
