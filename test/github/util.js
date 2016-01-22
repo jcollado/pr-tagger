@@ -32,14 +32,14 @@ describe('github.util.writeComment', function () {
   })
 
   it('writes comment object to log on success', function () {
-    const expected = '<comment object>'
-    createComment.yields(null, expected)
+    const expected = {html_url: '<some url>'}
+    createComment.yields(null, expected, '<response>')
     const util = requireInject('../../lib/github/util', stubs)
 
-    return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
+    return expect(util.writeComment('auth data', 'user', 'project', pr, 'body'))
       .to.be.fulfilled.then(function () {
         expect(logger.debug).to.have.been.calledWith(
-          'Comment added to PR#%d: %s', pr, JSON.stringify(expected))
+          'Comment added to PR#%d: %s', pr, expected.html_url)
       })
   })
 
