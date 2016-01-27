@@ -50,7 +50,7 @@
     "coveralls": "2.11.6",
     "ghooks": "1.0.3",
     "istanbul": "0.4.2",
-    "mocha": "2.3.4",
+    "mocha": "2.4.2",
     "multitest": "0.2.0",
     "require-inject": "1.3.0",
     "sinon": "1.17.2",
