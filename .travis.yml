@@ -12,6 +12,7 @@ deploy:
   on:
     tags: true
     repo: jcollado/pr-tagger
+    node: '5'
 after_deploy:
 - ./pr-tagger.js --log-level debug --access-token ${GH_TOKEN}
 env:
