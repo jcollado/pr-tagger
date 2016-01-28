@@ -51,7 +51,7 @@
     "ghooks": "1.0.3",
     "istanbul": "0.4.2",
     "mocha": "2.4.4",
-    "multitest": "0.2.0",
+    "multitest": "0.3.2",
     "require-inject": "1.3.0",
     "sinon": "1.17.3",
     "sinon-as-promised": "4.0.0",
