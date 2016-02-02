@@ -23,7 +23,8 @@ describe('github.util.writeComment', function () {
     createComment = sinon.stub()
     stubs = {
       ghissues: {
-        createComment
+        createComment,
+        list: sinon.spy()
       }
     }
     stubs[require.resolve('../../lib/logging')] = {
@@ -93,6 +94,7 @@ describe('github.util.checkAuthorization', function () {
     list = sinon.stub()
     stubs = {
       ghissues: {
+        createComment: sinon.spy(),
         list
       }
     }
