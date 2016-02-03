@@ -2,7 +2,7 @@
   "name": "pr-tagger",
   "version": "0.7.1",
   "description": "Add comment to PRs in GitHub with version tag for latest release",
-  "main": "pr-tagger.js",
+  "main": "./lib/main",
   "bin": {
     "pr-tagger": "./pr-tagger.js"
   },
