@@ -45,6 +45,7 @@
     "winston": "2.1.1"
   },
   "devDependencies": {
+    "babel-preset-es2015-node4": "2.0.3",
     "babel-register": "6.4.3",
     "chai": "3.5.0",
     "chai-as-promised": "5.2.0",
@@ -64,5 +65,10 @@
       "pre-commit": "npm test",
       "pre-push": "npm run multitest"
     }
+  },
+  "babel": {
+    "presets": [
+      "es2015-node4"
+    ]
   }
 }
