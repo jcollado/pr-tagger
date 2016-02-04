@@ -15,7 +15,7 @@
     "premultitest": "npm run lint",
     "pretest": "npm run lint",
     "preversion": "npm run multitest",
-    "test": "mocha --recursive ./test"
+    "test": "mocha --compilers js:babel-register --recursive ./test"
   },
   "repository": {
     "type": "git",
@@ -45,6 +45,7 @@
     "winston": "2.1.1"
   },
   "devDependencies": {
+    "babel-register": "6.4.3",
     "chai": "3.5.0",
     "chai-as-promised": "5.2.0",
     "coveralls": "2.11.6",
