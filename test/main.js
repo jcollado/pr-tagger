@@ -38,15 +38,15 @@ describe('main', function () {
     }
     parseArguments = sinon.stub()
     stubs = {}
-    stubs[require.resolve('../lib/arguments')] = {
+    stubs[require.resolve('../src/arguments')] = {
       parseArguments
     }
-    stubs[require.resolve('../lib/git')] = git
-    stubs[require.resolve('../lib/github')] = github
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../src/git')] = git
+    stubs[require.resolve('../src/github')] = github
+    stubs[require.resolve('../src/logging')] = {
       logger
     }
-    stubs[require.resolve('../lib/util')] = {
+    stubs[require.resolve('../src/util')] = {
       getUrl
     }
   })
@@ -54,7 +54,7 @@ describe('main', function () {
   it('returns when user name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug'})
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -66,7 +66,7 @@ describe('main', function () {
   it('returns when project name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug', user: 'user'})
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -78,7 +78,7 @@ describe('main', function () {
   it('returns when no tags are found in repository', function () {
     git.getSemverTags.returns([])
     parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith('No tags found in repository')
@@ -94,7 +94,7 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -111,7 +111,7 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -133,7 +133,7 @@ describe('main', function () {
     github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
     github.writeComments.resolves(newComments)
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
       expect(logger.info).to.have.been.calledWith('%d comments written', 2)
@@ -155,7 +155,7 @@ describe('main', function () {
     github.authorize.resolves('authorization data')
     const error = new Error('some error')
     github.writeComments.rejects(error)
-    const main = requireInject('../lib/main', stubs)
+    const main = requireInject('../src/main', stubs)
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(error)

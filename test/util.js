@@ -26,13 +26,13 @@ describe('util.exec', function () {
         execSync: sinon.stub()
       }
     }
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../src/logging')] = {
       logger
     }
   })
 
   it('writes the command to the log', function () {
-    const exec = requireInject('../lib/util', stubs).exec
+    const exec = requireInject('../src/util', stubs).exec
 
     exec(command)
     expect(logger.debug).to.have.been.calledWith('Command: %s', command)
@@ -41,7 +41,7 @@ describe('util.exec', function () {
   it('returns command stdout on success', function () {
     const expectedStdout = 'this is the command stdout'
     stubs.child_process.execSync.returns(expectedStdout)
-    const exec = requireInject('../lib/util', stubs).exec
+    const exec = requireInject('../src/util', stubs).exec
 
     const stdout = exec(command)
     expect(stdout).to.equal(expectedStdout)
@@ -50,7 +50,7 @@ describe('util.exec', function () {
   it('logs error and exits on failure', function () {
     const expectedError = new Error('some error')
     stubs.child_process.execSync.throws(expectedError)
-    const util = requireInject('../lib/util', stubs)
+    const util = requireInject('../src/util', stubs)
 
     sinon.stub(process, 'exit')
     try {
@@ -86,14 +86,14 @@ describe('util.getUrl', function () {
         join: sinon.stub().returns(packagePath)
       }
     }
-    stubs[require.resolve('../lib/logging')] = {
+    stubs[require.resolve('../src/logging')] = {
       logger
     }
   })
 
   it('returns empty object on file not found', function () {
     existsSync.returns(false)
-    const util = requireInject('../lib/util', stubs)
+    const util = requireInject('../src/util', stubs)
 
     const url = util.getUrl()
     expect(logger.warn).to.have.been.calledWith(
@@ -103,7 +103,7 @@ describe('util.getUrl', function () {
 
   function injectPkgData (pkgData, checkFn) {
     existsSync.returns(true)
-    const util = requireInject('../lib/util', stubs)
+    const util = requireInject('../src/util', stubs)
 
     try {
       require.cache[packagePath] = {exports: pkgData}

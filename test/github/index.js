@@ -22,14 +22,14 @@ describe('github.authorize', function () {
       'application-config': sinon.stub().returns({filePath: 'a path'}),
       ghauth
     }
-    stubs[require.resolve('../../lib/logging')] = {
+    stubs[require.resolve('../../src/logging')] = {
       logger: {
         debug: sinon.spy(),
         error: sinon.spy()
       }
     }
     checkAuthorization = sinon.stub()
-    stubs[require.resolve('../../lib/github/util')] = {
+    stubs[require.resolve('../../src/github/util')] = {
       checkAuthorization
     }
     program = {
@@ -43,7 +43,7 @@ describe('github.authorize', function () {
     const expected = {user: 'some user', token: 'some token'}
     program.accessToken = 'some token'
     checkAuthorization.resolves(expected)
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.fulfilled.then(
       function (authData) {
@@ -54,7 +54,7 @@ describe('github.authorize', function () {
   it('uses token from configuration file by default', function () {
     ghauth.yields()
     checkAuthorization.resolves()
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.fulfilled.then(
       function (authData) {
@@ -66,7 +66,7 @@ describe('github.authorize', function () {
     const expected = {user: 'some user', token: 'some token'}
     ghauth.yields()
     checkAuthorization.resolves(expected)
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.eventually.equal(expected)
   })
@@ -74,7 +74,7 @@ describe('github.authorize', function () {
   it('rejects on general failure', function () {
     const message = 'some error'
     ghauth.yields(new Error(message))
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.rejected.then(
       function (error) {
@@ -85,7 +85,7 @@ describe('github.authorize', function () {
 
   it('rejects on bad credentials failure', function () {
     ghauth.yields(new Error('Bad credentials'))
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.rejected.then(
       function (error) {
@@ -121,10 +121,10 @@ describe('github.writeComments', function () {
         listComments
       }
     }
-    stubs[require.resolve('../../lib/logging')] = {
+    stubs[require.resolve('../../src/logging')] = {
       logger
     }
-    stubs[require.resolve('../../lib/github/util')] = {
+    stubs[require.resolve('../../src/github/util')] = {
       getSemverComments,
       writeComment
     }
@@ -138,7 +138,7 @@ describe('github.writeComments', function () {
   it('gets comments for each PR', function () {
     listComments.yields(null, ['some comment', 'another comment'])
     getSemverComments.returns([])
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
@@ -153,7 +153,7 @@ describe('github.writeComments', function () {
   it('logs errors when retrieving comments', function () {
     const error = 'some error'
     listComments.yields(error)
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
@@ -173,7 +173,7 @@ describe('github.writeComments', function () {
     getSemverComments.returns([])
     const expected = 'new comment'
     writeComment.returns(expected)
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     program.dryRun = false
     return expect(github.writeComments(authData, program, prs, comment))
@@ -191,7 +191,7 @@ describe('github.writeComments', function () {
   it('does not write comments if dryRun is set', function () {
     listComments.yields(null, ['some comment', 'another comment'])
     getSemverComments.returns([])
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
@@ -207,7 +207,7 @@ describe('github.writeComments', function () {
     listComments.yields(null, ['some comment', 'another comment'])
     const semverComments = ['some semver comment']
     getSemverComments.returns(semverComments)
-    const github = requireInject('../../lib/github', stubs)
+    const github = requireInject('../../src/github', stubs)
 
     program.dryRun = false
     return expect(github.writeComments(authData, program, prs, comment))

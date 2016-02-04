@@ -27,7 +27,7 @@ describe('github.util.writeComment', function () {
         list: sinon.spy()
       }
     }
-    stubs[require.resolve('../../lib/logging')] = {
+    stubs[require.resolve('../../src/logging')] = {
       logger
     }
   })
@@ -35,7 +35,7 @@ describe('github.util.writeComment', function () {
   it('writes comment object to log on success', function () {
     const expected = {html_url: '<some url>'}
     createComment.yields(null, expected, '<response>')
-    const util = requireInject('../../lib/github/util', stubs)
+    const util = requireInject('../../src/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'body'))
       .to.be.fulfilled.then(function () {
@@ -47,7 +47,7 @@ describe('github.util.writeComment', function () {
   it('writes error to log on failure', function () {
     const expected = new Error('some error')
     createComment.yields(expected)
-    const util = requireInject('../../lib/github/util', stubs)
+    const util = requireInject('../../src/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
       .to.be.fulfilled.then(function () {
@@ -58,7 +58,7 @@ describe('github.util.writeComment', function () {
 })
 
 describe('github.util.getSemverComments', function () {
-  const util = require('../../lib/github/util')
+  const util = require('../../src/github/util')
 
   it('filters semver comments', function () {
     const commentList = [
@@ -103,14 +103,14 @@ describe('github.util.checkAuthorization', function () {
   it('resolves if issues can be retrieved', function () {
     const authData = 'authorization data'
     list.yields()
-    const util = requireInject('../../lib/github/util', stubs)
+    const util = requireInject('../../src/github/util', stubs)
     return expect(util.checkAuthorization(authData, 'program'))
       .to.eventually.equal(authData)
   })
 
   it("rejects if issues list can't be retrieved", function () {
     list.yields(new Error('some error'))
-    const util = requireInject('../../lib/github/util', stubs)
+    const util = requireInject('../../src/github/util', stubs)
     return expect(util.checkAuthorization('authorization data', 'program'))
       .to.be.rejected
   })
