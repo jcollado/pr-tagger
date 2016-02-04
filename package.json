@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build": "babel -d lib src",
-    "cover": "istanbul cover _mocha -- --recursive ./test",
-    "coveralls": "istanbul cover --report lcovonly _mocha -- --recursive ./test && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
+    "cover": "nyc npm test",
+    "coveralls": "npm run cover && npm run report:text | coveralls",
     "lint": "standard",
     "multitest": "multitest",
     "postversion": "git push --follow-tags",
@@ -17,6 +17,8 @@
     "prepublish": "npm run build",
     "pretest": "npm run lint",
     "preversion": "npm run multitest",
+    "report:html": "nyc report --reporter html",
+    "report:text": "nyc report --reporter text-lcov",
     "test": "mocha --compilers js:babel-register --recursive ./test"
   },
   "repository": {
@@ -53,9 +55,9 @@
     "chai-as-promised": "5.2.0",
     "coveralls": "2.11.6",
     "ghooks": "1.0.3",
-    "istanbul": "0.4.2",
     "mocha": "2.4.5",
     "multitest": "0.4.1",
+    "nyc": "5.5.0",
     "require-inject": "1.3.0",
     "sinon": "1.17.3",
     "sinon-as-promised": "4.0.0",
