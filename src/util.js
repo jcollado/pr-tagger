@@ -1,12 +1,10 @@
-'use strict'
+import fs from 'fs'
+import childProcess from 'child_process'
+import path from 'path'
 
-const fs = require('fs')
-const childProcess = require('child_process')
-const path = require('path')
+import ghUrl from 'github-url'
 
-const ghUrl = require('github-url')
-
-const logger = require('./logging').logger
+import {logger} from './logging'
 
 function exec (command) {
   logger.debug('Command: %s', command)
@@ -63,7 +61,7 @@ function getUrl () {
   return url
 }
 
-module.exports = {
+export {
   exec,
   getUrl
 }

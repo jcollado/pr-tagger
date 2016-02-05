@@ -1,9 +1,7 @@
-'use strict'
+import semver from 'semver'
 
-const semver = require('semver')
-
-const exec = require('./util').exec
-const logger = require('./logging').logger
+import { exec } from './util'
+import { logger } from './logging'
 
 function getSemverTags () {
   const gitTagCmd = 'git tag'
@@ -33,7 +31,7 @@ function getPRs (commits) {
   return prs
 }
 
-module.exports = {
+export {
   getMergeCommits,
   getPRs,
   getSemverTags

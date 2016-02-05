@@ -1,12 +1,11 @@
-'use strict'
-const semver = require('semver')
+import semver from 'semver'
 
-const git = require('./git')
-const github = require('./github')
-const logger = require('./logging').logger
-const parseArguments = require('./arguments').parseArguments
-const pkg = require('../package')
-const util = require('./util')
+import git from './git'
+import github from './github'
+import {logger} from './logging'
+import {parseArguments} from './arguments'
+import pkg from '../package'
+import util from './util'
 
 function main () {
   const url = util.getUrl()
@@ -88,4 +87,4 @@ function main () {
   })
 }
 
-module.exports = main
+export default main

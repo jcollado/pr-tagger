@@ -1,15 +1,13 @@
-'use strict'
+import promisify from 'promisify-object'
+import semverRegex from 'semver-regex'
 
-const promisify = require('promisify-object').default
 const ghissues = promisify(require('ghissues'), ['createComment', 'list'])
-const semverRegex = require('semver-regex')
 
-const logger = require('../logging').logger
+import {logger} from '../logging'
 
 function writeComment (authData, owner, project, pr, comment) {
   return ghissues.createComment(authData, owner, project, pr, comment).then(
-    function (data) {
-      const comment = data[0]
+    function ([comment]) {
       logger.debug('Comment added to PR#%d: %s', pr, comment.html_url)
     },
     function (error) {
@@ -34,7 +32,7 @@ function checkAuthorization (authData, program) {
   })
 }
 
-module.exports = {
+export {
   checkAuthorization,
   getSemverComments,
   writeComment

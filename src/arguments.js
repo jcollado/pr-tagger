@@ -1,6 +1,4 @@
-'use strict'
-
-const program = require('commander')
+import program from 'commander'
 
 function parseArguments (defaults, argv) {
   program
@@ -23,6 +21,6 @@ function parseArguments (defaults, argv) {
   return program
 }
 
-module.exports = {
+export {
   parseArguments
 }

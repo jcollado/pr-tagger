@@ -1,14 +1,13 @@
-'use strict'
+import {format} from 'util'
 
-const format = require('util').format
+import applicationConfig from 'application-config'
+import promisify from 'promisify-object'
 
-const applicationConfig = require('application-config')
-const promisify = require('promisify-object').default
 const ghauth = promisify(require('ghauth'))
 const ghissues = promisify(require('ghissues'), ['listComments'])
 
-const logger = require('../logging').logger
-const util = require('./util')
+import {logger} from '../logging'
+import util from './util'
 
 function authorize (program) {
   let authPromise
@@ -82,7 +81,7 @@ function writeComments (authData, program, prs, comment) {
   }))
 }
 
-module.exports = {
+export {
   authorize,
   writeComments
 }
