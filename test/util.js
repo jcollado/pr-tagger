@@ -20,12 +20,8 @@ describe('util.exec', () => {
     }
 
     stubs = {
-      child_process: {
-        execSync: sinon.stub()
-      }
-    }
-    stubs[require.resolve('../src/logging')] = {
-      logger
+      child_process: { execSync: sinon.stub() },
+      [require.resolve('../src/logging')]: { logger }
     }
   })
 
@@ -76,16 +72,10 @@ describe('util.getUrl', () => {
     ghUrl = sinon.stub()
 
     stubs = {
-      fs: {
-        existsSync
-      },
+      fs: { existsSync },
       'github-url': ghUrl,
-      path: {
-        join: sinon.stub().returns(packagePath)
-      }
-    }
-    stubs[require.resolve('../src/logging')] = {
-      logger
+      path: { join: sinon.stub().returns(packagePath) },
+      [require.resolve('../src/logging')]: { logger }
     }
   })
 

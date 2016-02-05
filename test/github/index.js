@@ -16,19 +16,17 @@ describe('github.authorize', () => {
 
   beforeEach('create stubs', () => {
     ghauth = sinon.stub()
+    checkAuthorization = sinon.stub()
     stubs = {
       'application-config': sinon.stub().returns({filePath: 'a path'}),
-      ghauth
-    }
-    stubs[require.resolve('../../src/logging')] = {
-      logger: {
-        debug: sinon.spy(),
-        error: sinon.spy()
-      }
-    }
-    checkAuthorization = sinon.stub()
-    stubs[require.resolve('../../src/github/util')] = {
-      checkAuthorization
+      ghauth,
+      [require.resolve('../../src/logging')]: {
+        logger: {
+          debug: sinon.spy(),
+          error: sinon.spy()
+        }
+      },
+      [require.resolve('../../src/github/util')]: { checkAuthorization }
     }
     program = {
       name: 'a name',
@@ -117,14 +115,12 @@ describe('github.writeComments', () => {
     stubs = {
       ghissues: {
         listComments
+      },
+      [require.resolve('../../src/logging')]: { logger },
+      [require.resolve('../../src/github/util')]: {
+        getSemverComments,
+        writeComment
       }
-    }
-    stubs[require.resolve('../../src/logging')] = {
-      logger
-    }
-    stubs[require.resolve('../../src/github/util')] = {
-      getSemverComments,
-      writeComment
     }
 
     program = {

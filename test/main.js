@@ -35,17 +35,12 @@ describe('main', () => {
       error: sinon.spy()
     }
     parseArguments = sinon.stub()
-    stubs = {}
-    stubs[require.resolve('../src/arguments')] = {
-      parseArguments
-    }
-    stubs[require.resolve('../src/git')] = git
-    stubs[require.resolve('../src/github')] = github
-    stubs[require.resolve('../src/logging')] = {
-      logger
-    }
-    stubs[require.resolve('../src/util')] = {
-      getUrl
+    stubs = {
+      [require.resolve('../src/arguments')]: { parseArguments },
+      [require.resolve('../src/git')]: git,
+      [require.resolve('../src/github')]: github,
+      [require.resolve('../src/logging')]: { logger },
+      [require.resolve('../src/util')]: { getUrl }
     }
   })
 

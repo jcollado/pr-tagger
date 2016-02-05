@@ -23,10 +23,8 @@ describe('github.util.writeComment', () => {
       ghissues: {
         createComment,
         list: sinon.spy()
-      }
-    }
-    stubs[require.resolve('../../src/logging')] = {
-      logger
+      },
+      [require.resolve('../../src/logging')]: { logger }
     }
   })
 
