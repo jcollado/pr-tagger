@@ -1,4 +1,5 @@
 import chai from 'chai'
+import path from 'path'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
@@ -19,7 +20,11 @@ test.beforeEach('create stubs', (t) => {
   const stubs = {
     fs: { existsSync },
     'github-url': ghUrl,
-    path: { join: sinon.stub().returns(packagePath) },
+    path: {
+      basename: path.basename,
+      extname: path.extname,
+      join: sinon.stub().returns(packagePath)
+    },
     [require.resolve('../../src/logging')]: { logger }
   }
   const util = requireInject('../../src/util', stubs)
