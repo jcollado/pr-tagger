@@ -1,12 +1,10 @@
 /* globals describe it beforeEach */
-'use strict'
-
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const requireInject = require('require-inject')
-const sinon = require('sinon')
-const sinonChai = require('sinon-chai')
-require('sinon-as-promised')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import requireInject from 'require-inject'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import 'sinon-as-promised'
 
 const expect = chai.expect
 chai.use(chaiAsPromised)
@@ -54,7 +52,7 @@ describe('main', function () {
   it('returns when user name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug'})
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -66,7 +64,7 @@ describe('main', function () {
   it('returns when project name is not found', function () {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug', user: 'user'})
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -78,7 +76,7 @@ describe('main', function () {
   it('returns when no tags are found in repository', function () {
     git.getSemverTags.returns([])
     parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith('No tags found in repository')
@@ -94,7 +92,7 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -111,7 +109,7 @@ describe('main', function () {
       project: 'project',
       tag
     })
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
@@ -133,7 +131,7 @@ describe('main', function () {
     github.authorize.resolves('authorization data')
     const newComments = ['a new comment', null, 'another new comment']
     github.writeComments.resolves(newComments)
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(0)
       expect(logger.info).to.have.been.calledWith('%d comments written', 2)
@@ -155,7 +153,7 @@ describe('main', function () {
     github.authorize.resolves('authorization data')
     const error = new Error('some error')
     github.writeComments.rejects(error)
-    const main = requireInject('../src/main', stubs)
+    const main = requireInject('../src/main', stubs).default
     return expect(main()).to.be.fulfilled.then(function (retcode) {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(error)

@@ -1,10 +1,8 @@
 /* global describe it beforeEach */
-'use strict'
-
-const chai = require('chai')
-const requireInject = require('require-inject')
-const sinon = require('sinon')
-const sinonChai = require('sinon-chai')
+import chai from 'chai'
+import requireInject from 'require-inject'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 
 const expect = chai.expect
 chai.use(sinonChai)

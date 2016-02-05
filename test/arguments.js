@@ -1,12 +1,10 @@
 /* global describe it */
-'use strict'
-const chai = require('chai')
+import chai from 'chai'
+import {parseArguments} from '../src/arguments'
 
 const expect = chai.expect
 
 describe('arguments.parseArguments', function () {
-  const parseArguments = require('../src/arguments').parseArguments
-
   const defaults = {
     version: 'some version',
     description: 'some description',

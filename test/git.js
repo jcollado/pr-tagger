@@ -1,9 +1,7 @@
 /* global describe it beforeEach */
-'use strict'
-
-const chai = require('chai')
-const requireInject = require('require-inject')
-const sinon = require('sinon')
+import chai from 'chai'
+import requireInject from 'require-inject'
+import sinon from 'sinon'
 
 const expect = chai.expect
 
