@@ -1,9 +1,6 @@
-import chai from 'chai'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
 import test from 'ava'
-
-const expect = chai.expect
 
 test.beforeEach('git.getSemverTags', (t) => {
   const exec = sinon.stub()
@@ -19,7 +16,7 @@ test('git.getSemverTags: returns semver tags only in an array', (t) => {
   exec.returns(new Buffer('v0.1.0\nnot-semver\nv0.2.0\nv0.2.1\nv1.0.0\n'))
 
   const tags = git.getSemverTags()
-  expect(tags).to.deep.equal(['v1.0.0', 'v0.2.1', 'v0.2.0', 'v0.1.0'])
+  t.same(tags, ['v1.0.0', 'v0.2.1', 'v0.2.0', 'v0.1.0'])
 })
 
 test('git.getSemverTags: returns empty array when no tags found', (t) => {
@@ -27,22 +24,21 @@ test('git.getSemverTags: returns empty array when no tags found', (t) => {
   exec.returns(new Buffer('not-semver\n'))
 
   const tags = git.getSemverTags()
-  expect(tags).to.deep.equal([])
+  t.same(tags, [])
 })
 
 test('git.getMergeCommits: returns one commit per line', (t) => {
   const { exec, git } = t.context
   exec.returns(new Buffer('commit 1\ncommit 2\n'))
 
-  expect(git.getMergeCommits('a..b'))
-    .to.deep.equal(['commit 1', 'commit 2'])
+  t.same(git.getMergeCommits('a..b'), ['commit 1', 'commit 2'])
 })
 
 test('git.getMergeCommits: returns empty array when no commits are found', (t) => {
   const { exec, git } = t.context
   exec.returns(new Buffer(''))
 
-  expect(git.getMergeCommits('a..b')).to.deep.equal([])
+  t.same(git.getMergeCommits('a..b'), [])
 })
 
 test('git.getPRs: filters commits with PRs', (t) => {
@@ -53,11 +49,11 @@ test('git.getPRs: filters commits with PRs', (t) => {
     'Merge pull request #7 from ',
     'this is another commit'
   ])
-  expect(prs).to.deep.equal([42, 7])
+  t.same(prs, [42, 7])
 })
 
 test('git.getPRs: return empty array when no commits have been passed', (t) => {
   const { git } = t.context
   const prs = git.getPRs([])
-  expect(prs).to.deep.equal([])
+  t.same(prs, [])
 })
