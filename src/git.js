@@ -1,9 +1,7 @@
-'use strict'
+import semver from 'semver'
 
-const semver = require('semver')
-
-const exec = require('./util').exec
-const logger = require('./logging').logger
+import { exec } from './util'
+import { logger } from './logging'
 
 function getSemverTags () {
   const gitTagCmd = 'git tag'
@@ -22,7 +20,7 @@ function getMergeCommits (revRange) {
 
 function getPRs (commits) {
   const prRegex = /Merge pull request #(\d+) from /
-  const prs = commits.map(function (line) {
+  const prs = commits.map(line => {
     const match = prRegex.exec(line)
     if (match) {
       return parseInt(match[1], 10)
@@ -33,7 +31,7 @@ function getPRs (commits) {
   return prs
 }
 
-module.exports = {
+export {
   getMergeCommits,
   getPRs,
   getSemverTags

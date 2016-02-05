@@ -1,68 +1,66 @@
 /* global describe it beforeEach */
-'use strict'
-
-const chai = require('chai')
-const requireInject = require('require-inject')
-const sinon = require('sinon')
+import chai from 'chai'
+import requireInject from 'require-inject'
+import sinon from 'sinon'
 
 const expect = chai.expect
 
 function stubExec (stubs, exec) {
-  return function () {
+  return () => {
     exec.reset()
-    stubs[require.resolve('../lib/util')] = { exec }
+    stubs[require.resolve('../src/util')] = { exec }
   }
 }
 
-describe('git.getSemverTags', function () {
+describe('git.getSemverTags', () => {
   let stubs = {}
   let exec = sinon.stub()
 
   beforeEach('create stubs', stubExec(stubs, exec))
 
-  it('returns semver tags only in an array', function () {
+  it('returns semver tags only in an array', () => {
     exec.returns(new Buffer('v0.1.0\nnot-semver\nv0.2.0\nv0.2.1\nv1.0.0\n'))
-    const git = requireInject('../lib/git', stubs)
+    const git = requireInject('../src/git', stubs)
 
     const tags = git.getSemverTags()
     expect(tags).to.deep.equal(['v1.0.0', 'v0.2.1', 'v0.2.0', 'v0.1.0'])
   })
 
-  it('returns empty array when no tags found', function () {
+  it('returns empty array when no tags found', () => {
     exec.returns(new Buffer('not-semver\n'))
-    const git = requireInject('../lib/git', stubs)
+    const git = requireInject('../src/git', stubs)
 
     const tags = git.getSemverTags()
     expect(tags).to.deep.equal([])
   })
 })
 
-describe('git.getMergeCommits', function () {
+describe('git.getMergeCommits', () => {
   let stubs = {}
   let exec = sinon.stub()
 
   beforeEach('create stubs', stubExec(stubs, exec))
 
-  it('returns one commit per line', function () {
+  it('returns one commit per line', () => {
     exec.returns(new Buffer('commit 1\ncommit 2\n'))
-    const git = requireInject('../lib/git', stubs)
+    const git = requireInject('../src/git', stubs)
 
     expect(git.getMergeCommits('a..b'))
       .to.deep.equal(['commit 1', 'commit 2'])
   })
 
-  it('returns empty array when no commits are found', function () {
+  it('returns empty array when no commits are found', () => {
     exec.returns(new Buffer(''))
-    const git = requireInject('../lib/git', stubs)
+    const git = requireInject('../src/git', stubs)
 
     expect(git.getMergeCommits('a..b')).to.deep.equal([])
   })
 })
 
-describe('git.getPRs', function () {
-  const getPRs = require('../lib/git').getPRs
+describe('git.getPRs', () => {
+  const getPRs = require('../src/git').getPRs
 
-  it('filters commits with PRs', function () {
+  it('filters commits with PRs', () => {
     const prs = getPRs([
       'this is a commit',
       'Merge pull request #42 from ',
@@ -72,7 +70,7 @@ describe('git.getPRs', function () {
     expect(prs).to.deep.equal([42, 7])
   })
 
-  it('return empty array when no commits have been passed', function () {
+  it('return empty array when no commits have been passed', () => {
     const prs = getPRs([])
     expect(prs).to.deep.equal([])
   })

@@ -1,12 +1,10 @@
-'use strict'
-
-const winston = require('winston')
+import winston from 'winston'
 
 const logger = new winston.Logger({
   transports: [new winston.transports.Console()]
 })
 logger.cli()
 
-module.exports = {
+export {
   logger
 }

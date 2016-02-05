@@ -1,12 +1,10 @@
 /* global describe it */
-'use strict'
-const chai = require('chai')
+import chai from 'chai'
+import {parseArguments} from '../src/arguments'
 
 const expect = chai.expect
 
-describe('arguments.parseArguments', function () {
-  const parseArguments = require('../lib/arguments').parseArguments
-
+describe('arguments.parseArguments', () => {
   const defaults = {
     version: 'some version',
     description: 'some description',
@@ -18,16 +16,16 @@ describe('arguments.parseArguments', function () {
   }
   const properties = ['owner', 'project', 'user', 'accessToken', 'tag', 'logLevel']
 
-  it('uses defaults', function () {
+  it('uses defaults', () => {
     const program = parseArguments(defaults, [])
-    properties.forEach(function (property) {
+    properties.forEach(property => {
       if (typeof defaults[property] !== 'undefined') {
         expect(program).to.have.property(property, defaults[property])
       }
     })
   })
 
-  it('parses arguments as expected', function () {
+  it('parses arguments as expected', () => {
     const expected = {
       owner: 'some owner',
       project: 'custom project',
@@ -45,17 +43,17 @@ describe('arguments.parseArguments', function () {
         '-l', expected.logLevel
       ])
 
-    properties.forEach(function (property) {
+    properties.forEach(property => {
       expect(program).to.have.property(property, expected[property])
     })
   })
 
-  it('dryRun is not set by default', function () {
+  it('dryRun is not set by default', () => {
     const program = parseArguments(defaults, [])
     expect(program.dryRun).to.be.undefined
   })
 
-  it('dryRun can be set', function () {
+  it('dryRun can be set', () => {
     const program = parseArguments(
       defaults, ['<node binary>', '<script>', '-n'])
     expect(program.dryRun).to.be.true

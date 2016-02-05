@@ -1,14 +1,13 @@
-'use strict'
+import {format} from 'util'
 
-const format = require('util').format
+import applicationConfig from 'application-config'
+import promisify from 'promisify-object'
 
-const applicationConfig = require('application-config')
-const promisify = require('promisify-object').default
 const ghauth = promisify(require('ghauth'))
 const ghissues = promisify(require('ghissues'), ['listComments'])
 
-const logger = require('../logging').logger
-const util = require('./util')
+import {logger} from '../logging'
+import util from './util'
 
 function authorize (program) {
   let authPromise
@@ -40,10 +39,10 @@ function authorize (program) {
   }
 
   return authPromise
-  .then(function (authData) {
+  .then(authData => {
     return util.checkAuthorization(authData, program)
   })
-  .catch(function (error) {
+  .catch(error => {
     let message = format('GitHub Authorization failure: %s', error)
     if (error.message.includes('Bad credentials')) {
       message += badCredentialsMessage
@@ -53,11 +52,11 @@ function authorize (program) {
 }
 
 function writeComments (authData, program, prs, comment) {
-  return Promise.all(prs.map(function (pr) {
+  return Promise.all(prs.map(pr => {
     logger.info('Checking PR#%d comments...', pr)
     return ghissues.listComments(authData, program.owner, program.project, pr)
       .then(
-        function (commentList) {
+        commentList => {
           const semverComments = util.getSemverComments(commentList)
 
           if (semverComments.length > 0) {
@@ -75,14 +74,14 @@ function writeComments (authData, program, prs, comment) {
 
           return null
         },
-        function (error) {
+        error => {
           logger.error('Error checking PR#%d comments: %s', pr, error)
           return null
         })
   }))
 }
 
-module.exports = {
+export {
   authorize,
   writeComments
 }
