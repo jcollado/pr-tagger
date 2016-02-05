@@ -7,12 +7,12 @@ import sinonChai from 'sinon-chai'
 const expect = chai.expect
 chai.use(sinonChai)
 
-describe('util.exec', function () {
+describe('util.exec', () => {
   const command = 'some command'
   let stubs
   let logger
 
-  beforeEach('create stubs', function () {
+  beforeEach('create stubs', () => {
     logger = {
       cli: sinon.spy(),
       debug: sinon.spy(),
@@ -29,14 +29,14 @@ describe('util.exec', function () {
     }
   })
 
-  it('writes the command to the log', function () {
+  it('writes the command to the log', () => {
     const exec = requireInject('../src/util', stubs).exec
 
     exec(command)
     expect(logger.debug).to.have.been.calledWith('Command: %s', command)
   })
 
-  it('returns command stdout on success', function () {
+  it('returns command stdout on success', () => {
     const expectedStdout = 'this is the command stdout'
     stubs.child_process.execSync.returns(expectedStdout)
     const exec = requireInject('../src/util', stubs).exec
@@ -45,7 +45,7 @@ describe('util.exec', function () {
     expect(stdout).to.equal(expectedStdout)
   })
 
-  it('logs error and exits on failure', function () {
+  it('logs error and exits on failure', () => {
     const expectedError = new Error('some error')
     stubs.child_process.execSync.throws(expectedError)
     const util = requireInject('../src/util', stubs)
@@ -61,14 +61,14 @@ describe('util.exec', function () {
   })
 })
 
-describe('util.getUrl', function () {
+describe('util.getUrl', () => {
   let stubs
   let logger
   let existsSync
   let ghUrl
   const packagePath = require.resolve('../package')
 
-  beforeEach('create stubs', function () {
+  beforeEach('create stubs', () => {
     logger = {
       warn: sinon.spy()
     }
@@ -89,7 +89,7 @@ describe('util.getUrl', function () {
     }
   })
 
-  it('returns empty object on file not found', function () {
+  it('returns empty object on file not found', () => {
     existsSync.returns(false)
     const util = requireInject('../src/util', stubs)
 
@@ -112,76 +112,76 @@ describe('util.getUrl', function () {
     }
   }
 
-  it('returns empty object on repository field not found', function () {
+  it('returns empty object on repository field not found', () => {
     const pkgData = {}
-    injectPkgData(pkgData, function (url) {
+    injectPkgData(pkgData, url => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository field not found in package.json')
       expect(url).to.deep.equal({})
     })
   })
 
-  it('parses URL from repository in shortcut form', function () {
+  it('parses URL from repository in shortcut form', () => {
     const repositories = [
       'user/project',
       'some-user/project',
       'user/some-project'
     ]
-    repositories.forEach(function (repository) {
+    repositories.forEach(repository => {
       const expected = repository.split('/')
       const user = expected[0]
       const project = expected[1]
       const pkgData = {repository}
-      injectPkgData(pkgData, function (url) {
+      injectPkgData(pkgData, url => {
         expect(url).to.deep.equal({user, project})
       })
     })
   })
 
-  it('returns empty object on failure parsing repository in shortcut form', function () {
+  it('returns empty object on failure parsing repository in shortcut form', () => {
     const repositories = [
       'gist:11081aaa281',
       'bitbucket:example/repo',
       'gitlab:another/repo'
     ]
 
-    repositories.forEach(function (repository) {
+    repositories.forEach(repository => {
       const pkgData = {repository}
-      injectPkgData(pkgData, function (url) {
+      injectPkgData(pkgData, url => {
         expect(url).to.deep.equal({})
       })
     })
   })
 
-  it('returns empty object on repository type not found', function () {
+  it('returns empty object on repository type not found', () => {
     const pkgData = {repository: {}}
-    injectPkgData(pkgData, function (url) {
+    injectPkgData(pkgData, url => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type field not found in package.json')
       expect(url).to.deep.equal({})
     })
   })
 
-  it('returns empty object on repository type not git', function () {
+  it('returns empty object on repository type not git', () => {
     const repositoryType = 'some type'
     const pkgData = {repository: {type: repositoryType}}
-    injectPkgData(pkgData, function (url) {
+    injectPkgData(pkgData, url => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type is not git in package.json: %s', repositoryType)
       expect(url).to.deep.equal({})
     })
   })
 
-  it('returns empty object on repository.url field not found', function () {
+  it('returns empty object on repository.url field not found', () => {
     const pkgData = {repository: {type: 'git'}}
-    injectPkgData(pkgData, function (url) {
+    injectPkgData(pkgData, url => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository URL not found in package.json')
       expect(url).to.deep.equal({})
     })
   })
 
-  it('parses URL from repository.url field', function () {
+  it('parses URL from repository.url field', () => {
     const expected = {
       user: 'some user',
       project: 'some project'
@@ -195,7 +195,7 @@ describe('util.getUrl', function () {
       }
     }
 
-    injectPkgData(pkgData, function (url) {
+    injectPkgData(pkgData, url => {
       expect(url).to.equal(expected)
     })
     expect(ghUrl).to.have.been.calledWith(pkgData.repository.url)

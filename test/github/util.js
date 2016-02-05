@@ -7,13 +7,13 @@ import sinon from 'sinon'
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
-describe('github.util.writeComment', function () {
+describe('github.util.writeComment', () => {
   let createComment
   let stubs
   let logger
   const pr = 42
 
-  beforeEach('create stubs', function () {
+  beforeEach('create stubs', () => {
     logger = {
       debug: sinon.spy(),
       error: sinon.spy()
@@ -30,35 +30,35 @@ describe('github.util.writeComment', function () {
     }
   })
 
-  it('writes comment object to log on success', function () {
+  it('writes comment object to log on success', () => {
     const expected = {html_url: '<some url>'}
     createComment.yields(null, expected, '<response>')
     const util = requireInject('../../src/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'body'))
-      .to.be.fulfilled.then(function () {
+      .to.be.fulfilled.then(() => {
         expect(logger.debug).to.have.been.calledWith(
           'Comment added to PR#%d: %s', pr, expected.html_url)
       })
   })
 
-  it('writes error to log on failure', function () {
+  it('writes error to log on failure', () => {
     const expected = new Error('some error')
     createComment.yields(expected)
     const util = requireInject('../../src/github/util', stubs)
 
     return expect(util.writeComment('auth data', 'user', 'project', pr, 'comment'))
-      .to.be.fulfilled.then(function () {
+      .to.be.fulfilled.then(() => {
         expect(logger.error).to.have.been.calledWith(
           'Error adding comment to PR#%d: %s', pr, expected)
       })
   })
 })
 
-describe('github.util.getSemverComments', function () {
+describe('github.util.getSemverComments', () => {
   const util = require('../../src/github/util')
 
-  it('filters semver comments', function () {
+  it('filters semver comments', () => {
     const commentList = [
       {body: 'a comment'},
       {body: 'v0.0.0'},
@@ -77,18 +77,18 @@ describe('github.util.getSemverComments', function () {
       ])
   })
 
-  it('returns empty array on no comments', function () {
+  it('returns empty array on no comments', () => {
     const commentList = []
     expect(util.getSemverComments(commentList))
       .to.deep.equal([])
   })
 })
 
-describe('github.util.checkAuthorization', function () {
+describe('github.util.checkAuthorization', () => {
   let list
   let stubs
 
-  beforeEach(function () {
+  beforeEach(() => {
     list = sinon.stub()
     stubs = {
       ghissues: {
@@ -98,7 +98,7 @@ describe('github.util.checkAuthorization', function () {
     }
   })
 
-  it('resolves if issues can be retrieved', function () {
+  it('resolves if issues can be retrieved', () => {
     const authData = 'authorization data'
     list.yields()
     const util = requireInject('../../src/github/util', stubs)
@@ -106,7 +106,7 @@ describe('github.util.checkAuthorization', function () {
       .to.eventually.equal(authData)
   })
 
-  it("rejects if issues list can't be retrieved", function () {
+  it("rejects if issues list can't be retrieved", () => {
     list.yields(new Error('some error'))
     const util = requireInject('../../src/github/util', stubs)
     return expect(util.checkAuthorization('authorization data', 'program'))
