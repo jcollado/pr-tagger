@@ -1,4 +1,5 @@
 import chai from 'chai'
+import fs from 'fs'
 import path from 'path'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
@@ -10,7 +11,7 @@ chai.use(sinonChai)
 
 const packagePath = require.resolve('../../package')
 
-test.beforeEach('create stubs', (t) => {
+test.beforeEach((t) => {
   const logger = {
     warn: sinon.spy()
   }
@@ -18,12 +19,17 @@ test.beforeEach('create stubs', (t) => {
   const ghUrl = sinon.stub()
 
   const stubs = {
-    fs: { existsSync },
+    fs: {
+      existsSync,
+      readdirSync: fs.readdirSync,
+      readFileSync: fs.readFileSync
+    },
     'github-url': ghUrl,
     path: {
       basename: path.basename,
       extname: path.extname,
-      join: sinon.stub().returns(packagePath)
+      join: sinon.stub().returns(packagePath),
+      resolve: path.resolve
     },
     [require.resolve('../../src/logging')]: { logger }
   }
