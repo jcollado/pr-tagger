@@ -1,12 +1,7 @@
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
 import 'sinon-as-promised'
 import test from 'ava'
-
-chai.use(chaiAsPromised)
-const expect = chai.expect
 
 test.beforeEach('create stubs', (t) => {
   const ghauth = sinon.stub()
@@ -37,10 +32,9 @@ test('github.authorize: uses token from command line if available', (t) => {
   program.accessToken = 'some token'
   checkAuthorization.resolves(expected)
 
-  return expect(github.authorize(program)).to.be.fulfilled.then(
-    (authData) => {
-      expect(ghauth).to.not.have.been.called
-    })
+  return github.authorize(program).then((authData) => {
+    t.false(ghauth.called)
+  })
 })
 
 test('github.authorize: uses token from configuration file by default', (t) => {
@@ -48,10 +42,9 @@ test('github.authorize: uses token from configuration file by default', (t) => {
   ghauth.yields()
   checkAuthorization.resolves()
 
-  return expect(github.authorize(program)).to.be.fulfilled.then(
-    (authData) => {
-      expect(ghauth).to.have.been.called
-    })
+  return github.authorize(program).then((authData) => {
+    t.true(ghauth.called)
+  })
 })
 
 test('github.authorize: resolves to authorization data on success', (t) => {
@@ -60,7 +53,9 @@ test('github.authorize: resolves to authorization data on success', (t) => {
   ghauth.yields()
   checkAuthorization.resolves(expected)
 
-  return expect(github.authorize(program)).to.eventually.equal(expected)
+  return github.authorize(program).then((authData) => {
+    t.same(authData, expected)
+  })
 })
 
 test('github.authorize: rejects on general failure', (t) => {
@@ -68,20 +63,16 @@ test('github.authorize: rejects on general failure', (t) => {
   const message = 'some error'
   ghauth.yields(new Error(message))
 
-  return expect(github.authorize(program)).to.be.rejected.then(
-    (error) => {
-      expect(error).to.equal('GitHub Authorization failure: Error: some error')
-    }
-  )
+  return github.authorize(program).catch((error) => {
+    t.is(error, 'GitHub Authorization failure: Error: some error')
+  })
 })
 
 test('github.authorize: rejects on bad credentials failure', (t) => {
   const { ghauth, github, program } = t.context
   ghauth.yields(new Error('Bad credentials'))
 
-  return expect(github.authorize(program)).to.be.rejected.then(
-    (error) => {
-      expect(error).to.have.string('To troubleshoot the problem')
-    }
-  )
+  return github.authorize(program).catch((error) => {
+    t.true(error.includes('To troubleshoot the problem'))
+  })
 })
