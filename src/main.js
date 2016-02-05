@@ -74,7 +74,7 @@ function main () {
 
   return github.authorize(program)
   .then(authData => github.writeComments(authData, program, prs, comment))
-  .then(function (commentList) {
+  .then(commentList => {
     logger.info(
       '%d comments written',
       commentList.filter(comment => comment !== null).length)

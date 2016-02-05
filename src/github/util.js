@@ -7,10 +7,10 @@ import {logger} from '../logging'
 
 function writeComment (authData, owner, project, pr, comment) {
   return ghissues.createComment(authData, owner, project, pr, comment).then(
-    function ([comment]) {
+    ([comment]) => {
       logger.debug('Comment added to PR#%d: %s', pr, comment.html_url)
     },
-    function (error) {
+    error => {
       logger.error('Error adding comment to PR#%d: %s', pr, error)
     })
 }
@@ -24,10 +24,10 @@ function getSemverComments (commentList) {
 function checkAuthorization (authData, program) {
   // Get issues to make sure GitHub authorization has been successful
   const promise = ghissues.list(authData, program.owner, program.project)
-  promise.then(function () {
+  promise.then(() => {
     logger.debug('GitHub Authorization success for user: %s', authData.user)
   })
-  return promise.then(function () {
+  return promise.then(() => {
     return Promise.resolve(authData)
   })
 }

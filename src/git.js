@@ -20,7 +20,7 @@ function getMergeCommits (revRange) {
 
 function getPRs (commits) {
   const prRegex = /Merge pull request #(\d+) from /
-  const prs = commits.map(function (line) {
+  const prs = commits.map(line => {
     const match = prRegex.exec(line)
     if (match) {
       return parseInt(match[1], 10)
