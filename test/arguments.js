@@ -1,8 +1,5 @@
-import chai from 'chai'
 import {parseArguments} from '../src/arguments'
 import test from 'ava'
-
-const expect = chai.expect
 
 const defaults = {
   version: 'some version',
@@ -15,16 +12,16 @@ const defaults = {
 }
 const properties = ['owner', 'project', 'user', 'accessToken', 'tag', 'logLevel']
 
-test('arguments.parseArguments: uses defaults', () => {
+test('arguments.parseArguments: uses defaults', (t) => {
   const program = parseArguments(defaults, [])
   properties.forEach((property) => {
     if (typeof defaults[property] !== 'undefined') {
-      expect(program).to.have.property(property, defaults[property])
+      t.is(program[property], defaults[property])
     }
   })
 })
 
-test('arguments.parseArguments: parses arguments as expected', () => {
+test('arguments.parseArguments: parses arguments as expected', (t) => {
   const expected = {
     owner: 'some owner',
     project: 'custom project',
@@ -43,17 +40,17 @@ test('arguments.parseArguments: parses arguments as expected', () => {
     ])
 
   properties.forEach((property) => {
-    expect(program).to.have.property(property, expected[property])
+    t.is(program[property], expected[property])
   })
 })
 
-test('arguments.parseArguments: dryRun is not set by default', () => {
+test('arguments.parseArguments: dryRun is not set by default', (t) => {
   const program = parseArguments(defaults, [])
-  expect(program.dryRun).to.be.undefined
+  t.is(typeof program.dryRun, 'undefined')
 })
 
-test('arguments.parseArguments: dryRun can be set', () => {
+test('arguments.parseArguments: dryRun can be set', (t) => {
   const program = parseArguments(
     defaults, ['<node binary>', '<script>', '-n'])
-  expect(program.dryRun).to.be.true
+  t.true(program.dryRun)
 })
