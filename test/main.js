@@ -1,14 +1,7 @@
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 import 'sinon-as-promised'
 import test from 'ava'
-
-const expect = chai.expect
-chai.use(chaiAsPromised)
-chai.use(sinonChai)
 
 test.beforeEach((t) => {
   const getUrl = sinon.stub().returns('some url')
@@ -43,11 +36,11 @@ test('main: returns when user name is not found', (t) => {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['a tag', 'another tag'])
   parseArguments.returns({logLevel: 'debug'})
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith(
       'User name not found in package.json. ' +
-      'Use -u/--user to pass it explicitly.')
+      'Use -u/--user to pass it explicitly.'))
   })
 })
 
@@ -55,11 +48,11 @@ test('main: returns when project name is not found', (t) => {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['a tag', 'another tag'])
   parseArguments.returns({logLevel: 'debug', user: 'user'})
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith(
       'Project name not found in package.json. ' +
-      'Use -p/--project to pass it explicitly')
+      'Use -p/--project to pass it explicitly'))
   })
 })
 
@@ -67,9 +60,9 @@ test('main: returns when no tags are found in repository', (t) => {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns([])
   parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith('No tags found in repository')
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith('No tags found in repository'))
   })
 })
 
@@ -83,10 +76,9 @@ test('main: returns when tag is not semver compliant', (t) => {
     project: 'project',
     tag
   })
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
-      'Tag not semver compliant: %s', tag)
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith('Tag not semver compliant: %s', tag))
   })
 })
 
@@ -100,10 +92,9 @@ test('main: returns when tag is not found in repository', (t) => {
     project: 'project',
     tag
   })
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(
-      'Tag not found in repository: %s', tag)
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith('Tag not found in repository: %s', tag))
   })
 })
 
@@ -122,10 +113,10 @@ test('main: logs number of comments written on success', (t) => {
   github.authorize.resolves('authorization data')
   const newComments = ['a new comment', null, 'another new comment']
   github.writeComments.resolves(newComments)
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(0)
-    expect(logger.info).to.have.been.calledWith('%d comments written', 2)
-    expect(logger.info).to.have.been.calledWith('Done!')
+  return main().then((retcode) => {
+    t.is(retcode, 0)
+    t.true(logger.info.calledWith('%d comments written', 2))
+    t.true(logger.info.calledWith('Done!'))
   })
 })
 
@@ -144,8 +135,8 @@ test('main: writes unexpected error to log on failure', (t) => {
   github.authorize.resolves('authorization data')
   const error = new Error('some error')
   github.writeComments.rejects(error)
-  return expect(main()).to.be.fulfilled.then((retcode) => {
-    expect(retcode).to.equal(1)
-    expect(logger.error).to.have.been.calledWith(error)
+  return main().then((retcode) => {
+    t.is(retcode, 1)
+    t.true(logger.error.calledWith(error))
   })
 })
