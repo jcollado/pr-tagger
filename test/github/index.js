@@ -42,7 +42,7 @@ describe('github.authorize', () => {
     const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.fulfilled.then(
-      authData => {
+      (authData) => {
         expect(ghauth).to.not.have.been.called
       })
   })
@@ -53,7 +53,7 @@ describe('github.authorize', () => {
     const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.fulfilled.then(
-      authData => {
+      (authData) => {
         expect(ghauth).to.have.been.called
       })
   })
@@ -73,7 +73,7 @@ describe('github.authorize', () => {
     const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.rejected.then(
-      error => {
+      (error) => {
         expect(error).to.equal('GitHub Authorization failure: Error: some error')
       }
     )
@@ -84,7 +84,7 @@ describe('github.authorize', () => {
     const github = requireInject('../../src/github', stubs)
 
     return expect(github.authorize(program)).to.be.rejected.then(
-      error => {
+      (error) => {
         expect(error).to.have.string('To troubleshoot the problem')
       }
     )
@@ -136,8 +136,8 @@ describe('github.writeComments', () => {
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
-      .to.be.fulfilled.then(commentList => {
-        prs.forEach(pr => {
+      .to.be.fulfilled.then((commentList) => {
+        prs.forEach((pr) => {
           expect(listComments).to.have.been.calledWith(
             authData, program.owner, program.project, pr)
         })
@@ -151,11 +151,11 @@ describe('github.writeComments', () => {
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
-      .to.be.fulfilled.then(commentList => {
-        commentList.forEach(comment => {
+      .to.be.fulfilled.then((commentList) => {
+        commentList.forEach((comment) => {
           expect(comment).to.be.null
         })
-        prs.forEach(pr => {
+        prs.forEach((pr) => {
           expect(logger.error).to.have.been.calledWith(
             'Error checking PR#%d comments: %s', pr, error)
         })
@@ -171,11 +171,11 @@ describe('github.writeComments', () => {
 
     program.dryRun = false
     return expect(github.writeComments(authData, program, prs, comment))
-      .to.be.fulfilled.then(commentList => {
-        commentList.forEach(comment => {
+      .to.be.fulfilled.then((commentList) => {
+        commentList.forEach((comment) => {
           expect(comment).to.equal(expected)
         })
-        prs.forEach(pr => {
+        prs.forEach((pr) => {
           expect(writeComment).to.have.been.calledWith(
             authData, program.owner, program.project, pr, comment)
         })
@@ -189,8 +189,8 @@ describe('github.writeComments', () => {
 
     program.dryRun = true
     return expect(github.writeComments(authData, program, prs, comment))
-      .to.be.fulfilled.then(commentList => {
-        commentList.forEach(comment => {
+      .to.be.fulfilled.then((commentList) => {
+        commentList.forEach((comment) => {
           expect(comment).to.be.null
         })
         expect(writeComment).to.not.have.been.called
@@ -205,11 +205,11 @@ describe('github.writeComments', () => {
 
     program.dryRun = false
     return expect(github.writeComments(authData, program, prs, comment))
-      .to.be.fulfilled.then(commentList => {
-        commentList.forEach(comment => {
+      .to.be.fulfilled.then((commentList) => {
+        commentList.forEach((comment) => {
           expect(comment).to.be.null
         })
-        prs.forEach(pr => {
+        prs.forEach((pr) => {
           expect(logger.warn).to.have.been.calledWith(
             'Semver comments found in PR#%d: %s',
             pr, JSON.stringify(semverComments))

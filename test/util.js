@@ -104,7 +104,7 @@ describe('util.getUrl', () => {
 
   it('returns empty object on repository field not found', () => {
     const pkgData = {}
-    injectPkgData(pkgData, url => {
+    injectPkgData(pkgData, (url) => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository field not found in package.json')
       expect(url).to.deep.equal({})
@@ -117,12 +117,12 @@ describe('util.getUrl', () => {
       'some-user/project',
       'user/some-project'
     ]
-    repositories.forEach(repository => {
+    repositories.forEach((repository) => {
       const expected = repository.split('/')
       const user = expected[0]
       const project = expected[1]
       const pkgData = {repository}
-      injectPkgData(pkgData, url => {
+      injectPkgData(pkgData, (url) => {
         expect(url).to.deep.equal({user, project})
       })
     })
@@ -135,9 +135,9 @@ describe('util.getUrl', () => {
       'gitlab:another/repo'
     ]
 
-    repositories.forEach(repository => {
+    repositories.forEach((repository) => {
       const pkgData = {repository}
-      injectPkgData(pkgData, url => {
+      injectPkgData(pkgData, (url) => {
         expect(url).to.deep.equal({})
       })
     })
@@ -145,7 +145,7 @@ describe('util.getUrl', () => {
 
   it('returns empty object on repository type not found', () => {
     const pkgData = {repository: {}}
-    injectPkgData(pkgData, url => {
+    injectPkgData(pkgData, (url) => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type field not found in package.json')
       expect(url).to.deep.equal({})
@@ -155,7 +155,7 @@ describe('util.getUrl', () => {
   it('returns empty object on repository type not git', () => {
     const repositoryType = 'some type'
     const pkgData = {repository: {type: repositoryType}}
-    injectPkgData(pkgData, url => {
+    injectPkgData(pkgData, (url) => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository type is not git in package.json: %s', repositoryType)
       expect(url).to.deep.equal({})
@@ -164,7 +164,7 @@ describe('util.getUrl', () => {
 
   it('returns empty object on repository.url field not found', () => {
     const pkgData = {repository: {type: 'git'}}
-    injectPkgData(pkgData, url => {
+    injectPkgData(pkgData, (url) => {
       expect(logger.warn).to.have.been.calledWith(
         'Repository URL not found in package.json')
       expect(url).to.deep.equal({})
@@ -185,7 +185,7 @@ describe('util.getUrl', () => {
       }
     }
 
-    injectPkgData(pkgData, url => {
+    injectPkgData(pkgData, (url) => {
       expect(url).to.equal(expected)
     })
     expect(ghUrl).to.have.been.calledWith(pkgData.repository.url)
