@@ -73,15 +73,15 @@ function main () {
   const comment = `Released in: [${toTag}](https://github.com/${program.owner}/${program.project}/releases/tag/${toTag})`
 
   return github.authorize(program)
-  .then(authData => github.writeComments(authData, program, prs, comment))
-  .then(commentList => {
+  .then((authData) => github.writeComments(authData, program, prs, comment))
+  .then((commentList) => {
     logger.info(
       '%d comments written',
-      commentList.filter(comment => comment !== null).length)
+      commentList.filter((comment) => comment !== null).length)
     logger.info('Done!')
     return Promise.resolve(0)
   })
-  .catch(error => {
+  .catch((error) => {
     logger.error(error)
     return Promise.resolve(1)
   })

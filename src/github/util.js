@@ -10,14 +10,14 @@ function writeComment (authData, owner, project, pr, comment) {
     ([comment]) => {
       logger.debug('Comment added to PR#%d: %s', pr, comment.html_url)
     },
-    error => {
+    (error) => {
       logger.error('Error adding comment to PR#%d: %s', pr, error)
     })
 }
 
 function getSemverComments (commentList) {
-  const commentBodies = commentList.map(comment => comment.body)
-  const semverComments = commentBodies.filter(body => semverRegex().test(body))
+  const commentBodies = commentList.map((comment) => comment.body)
+  const semverComments = commentBodies.filter((body) => semverRegex().test(body))
   return semverComments
 }
 

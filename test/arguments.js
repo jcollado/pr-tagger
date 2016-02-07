@@ -18,7 +18,7 @@ describe('arguments.parseArguments', () => {
 
   it('uses defaults', () => {
     const program = parseArguments(defaults, [])
-    properties.forEach(property => {
+    properties.forEach((property) => {
       if (typeof defaults[property] !== 'undefined') {
         expect(program).to.have.property(property, defaults[property])
       }
@@ -43,7 +43,7 @@ describe('arguments.parseArguments', () => {
         '-l', expected.logLevel
       ])
 
-    properties.forEach(property => {
+    properties.forEach((property) => {
       expect(program).to.have.property(property, expected[property])
     })
   })

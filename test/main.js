@@ -48,7 +48,7 @@ describe('main', () => {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug'})
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'User name not found in package.json. ' +
@@ -60,7 +60,7 @@ describe('main', () => {
     git.getSemverTags.returns(['a tag', 'another tag'])
     parseArguments.returns({logLevel: 'debug', user: 'user'})
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Project name not found in package.json. ' +
@@ -72,7 +72,7 @@ describe('main', () => {
     git.getSemverTags.returns([])
     parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith('No tags found in repository')
     })
@@ -88,7 +88,7 @@ describe('main', () => {
       tag
     })
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not semver compliant: %s', tag)
@@ -105,7 +105,7 @@ describe('main', () => {
       tag
     })
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(
         'Tag not found in repository: %s', tag)
@@ -127,7 +127,7 @@ describe('main', () => {
     const newComments = ['a new comment', null, 'another new comment']
     github.writeComments.resolves(newComments)
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(0)
       expect(logger.info).to.have.been.calledWith('%d comments written', 2)
       expect(logger.info).to.have.been.calledWith('Done!')
@@ -149,7 +149,7 @@ describe('main', () => {
     const error = new Error('some error')
     github.writeComments.rejects(error)
     const main = requireInject('../src/main', stubs).default
-    return expect(main()).to.be.fulfilled.then(retcode => {
+    return expect(main()).to.be.fulfilled.then((retcode) => {
       expect(retcode).to.equal(1)
       expect(logger.error).to.have.been.calledWith(error)
     })
