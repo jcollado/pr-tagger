@@ -1,13 +1,8 @@
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import test from 'ava'
-
-chai.use(chaiAsPromised)
-const expect = chai.expect
 
 const util = require('../../../src/github/util')
 
-test('github.util.getSemverComments: filters semver comments', () => {
+test('github.util.getSemverComments: filters semver comments', (t) => {
   const commentList = [
     {body: 'a comment'},
     {body: 'v0.0.0'},
@@ -17,8 +12,9 @@ test('github.util.getSemverComments: filters semver comments', () => {
     {body: 'Released in: [v0.3.0](https://github.com/user/project/releases/tag/v0.3.0)'}
   ]
 
-  expect(util.getSemverComments(commentList))
-    .to.deep.equal([
+  t.same(
+    util.getSemverComments(commentList),
+    [
       'v0.0.0',
       'v0.1.0',
       'semver v0.2.0 embedded in a comment',
@@ -26,8 +22,7 @@ test('github.util.getSemverComments: filters semver comments', () => {
     ])
 })
 
-test('github.util.getSemverComments: returns empty array on no comments', () => {
+test('github.util.getSemverComments: returns empty array on no comments', (t) => {
   const commentList = []
-  expect(util.getSemverComments(commentList))
-    .to.deep.equal([])
+  t.same(util.getSemverComments(commentList), [])
 })
