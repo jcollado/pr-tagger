@@ -1,14 +1,6 @@
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
-import 'sinon-as-promised'
 import test from 'ava'
-
-chai.use(chaiAsPromised)
-chai.use(sinonChai)
-const expect = chai.expect
 
 const authData = {}
 const prs = [1, 2, 3, 4]
@@ -56,11 +48,11 @@ test('github.writeComments: gets comments for each PR', (t) => {
   getSemverComments.returns([])
 
   program.dryRun = true
-  return expect(github.writeComments(authData, program, prs, comment))
-    .to.be.fulfilled.then((commentList) => {
+  return github.writeComments(authData, program, prs, comment)
+    .then((commentList) => {
       prs.forEach((pr) => {
-        expect(listComments).to.have.been.calledWith(
-          authData, program.owner, program.project, pr)
+        t.true(listComments.calledWith(
+          authData, program.owner, program.project, pr))
       })
     })
 })
@@ -71,14 +63,14 @@ test('github.writeComments: logs errors when retrieving comments', (t) => {
   listComments.yields(error)
 
   program.dryRun = true
-  return expect(github.writeComments(authData, program, prs, comment))
-    .to.be.fulfilled.then((commentList) => {
+  return github.writeComments(authData, program, prs, comment)
+    .then((commentList) => {
       commentList.forEach((comment) => {
-        expect(comment).to.be.null
+        t.is(comment, null)
       })
       prs.forEach((pr) => {
-        expect(logger.error).to.have.been.calledWith(
-          'Error checking PR#%d comments: %s', pr, error)
+        t.true(logger.error.calledWith(
+          'Error checking PR#%d comments: %s', pr, error))
       })
     })
 })
@@ -91,14 +83,14 @@ test('github.writeComments: writes comments if dryRun is not set', (t) => {
   writeComment.returns(expected)
 
   program.dryRun = false
-  return expect(github.writeComments(authData, program, prs, comment))
-    .to.be.fulfilled.then((commentList) => {
+  return github.writeComments(authData, program, prs, comment)
+    .then((commentList) => {
       commentList.forEach((comment) => {
-        expect(comment).to.equal(expected)
+        t.is(comment, expected)
       })
       prs.forEach((pr) => {
-        expect(writeComment).to.have.been.calledWith(
-          authData, program.owner, program.project, pr, comment)
+        t.true(writeComment.calledWith(
+          authData, program.owner, program.project, pr, comment))
       })
     })
 })
@@ -109,12 +101,12 @@ test('github.writeComments: does not write comments if dryRun is set', (t) => {
   getSemverComments.returns([])
 
   program.dryRun = true
-  return expect(github.writeComments(authData, program, prs, comment))
-    .to.be.fulfilled.then((commentList) => {
+  return github.writeComments(authData, program, prs, comment)
+    .then((commentList) => {
       commentList.forEach((comment) => {
-        expect(comment).to.be.null
+        t.is(comment, null)
       })
-      expect(writeComment).to.not.have.been.called
+      t.false(writeComment.called)
     })
 })
 
@@ -125,16 +117,16 @@ test('github.writeComments: does not write comments if semver comments are found
   getSemverComments.returns(semverComments)
 
   program.dryRun = false
-  return expect(github.writeComments(authData, program, prs, comment))
-    .to.be.fulfilled.then((commentList) => {
+  return github.writeComments(authData, program, prs, comment)
+    .then((commentList) => {
       commentList.forEach((comment) => {
-        expect(comment).to.be.null
+        t.is(comment, null)
       })
       prs.forEach((pr) => {
-        expect(logger.warn).to.have.been.calledWith(
+        t.true(logger.warn.calledWith(
           'Semver comments found in PR#%d: %s',
-          pr, JSON.stringify(semverComments))
+          pr, JSON.stringify(semverComments)))
       })
-      expect(writeComment).to.not.have.been.called
+      t.false(writeComment.called)
     })
 })
