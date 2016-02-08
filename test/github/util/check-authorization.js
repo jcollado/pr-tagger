@@ -1,11 +1,6 @@
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
 import test from 'ava'
-
-chai.use(chaiAsPromised)
-const expect = chai.expect
 
 test.beforeEach((t) => {
   const list = sinon.stub()
@@ -22,15 +17,15 @@ test.beforeEach((t) => {
 
 test('github.util.checkAuthorization: resolves if issues can be retrieved', (t) => {
   const {list, util} = t.context
-  const authData = 'authorization data'
+  const expected = 'authorization data'
   list.yields()
-  return expect(util.checkAuthorization(authData, 'program'))
-    .to.eventually.equal(authData)
+  return util.checkAuthorization(expected, 'program').then((authData) => {
+    t.is(authData, expected)
+  })
 })
 
 test("github.util.checkAuthorization: rejects if issues list can't be retrieved", (t) => {
   const {list, util} = t.context
   list.yields(new Error('some error'))
-  return expect(util.checkAuthorization('authorization data', 'program'))
-    .to.be.rejected
+  return t.throws(util.checkAuthorization('authorization data', 'program'))
 })
