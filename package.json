@@ -19,7 +19,7 @@
     "preversion": "npm run multitest",
     "report:html": "nyc report --reporter html",
     "report:text": "nyc report --reporter text-lcov",
-    "test": "mocha --compilers js:babel-register --recursive ./test"
+    "test": "ava"
   },
   "repository": {
     "type": "git",
@@ -49,20 +49,17 @@
     "winston": "2.1.1"
   },
   "devDependencies": {
+    "ava": "0.11.0",
     "babel-cli": "6.5.1",
     "babel-preset-es2015-node4": "2.0.3",
     "babel-register": "6.5.1",
-    "chai": "3.5.0",
-    "chai-as-promised": "5.2.0",
     "coveralls": "2.11.6",
     "ghooks": "1.0.3",
-    "mocha": "2.4.5",
     "multitest": "0.4.1",
     "nyc": "5.6.0",
     "require-inject": "1.3.0",
     "sinon": "1.17.3",
     "sinon-as-promised": "4.0.0",
-    "sinon-chai": "2.8.0",
     "standard": "6.0.4"
   },
   "config": {
@@ -70,6 +67,11 @@
       "pre-commit": "npm test",
       "pre-push": "npm run multitest"
     }
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ]
   },
   "babel": {
     "presets": [

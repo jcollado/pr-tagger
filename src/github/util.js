@@ -23,13 +23,13 @@ function getSemverComments (commentList) {
 
 function checkAuthorization (authData, program) {
   // Get issues to make sure GitHub authorization has been successful
-  const promise = ghissues.list(authData, program.owner, program.project)
-  promise.then(() => {
-    logger.debug('GitHub Authorization success for user: %s', authData.user)
-  })
-  return promise.then(() => {
-    return Promise.resolve(authData)
-  })
+  return ghissues.list(authData, program.owner, program.project)
+    .then(() => {
+      logger.debug('GitHub Authorization success for user: %s', authData.user)
+    })
+    .then(() => {
+      return Promise.resolve(authData)
+    })
 }
 
 export {
