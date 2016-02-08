@@ -1,13 +1,8 @@
-import chai from 'chai'
 import fs from 'fs'
 import path from 'path'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 import test from 'ava'
-
-const expect = chai.expect
-chai.use(sinonChai)
 
 const packagePath = require.resolve('../../package')
 
@@ -42,9 +37,9 @@ test('util.getUrl: returns empty object on file not found', (t) => {
   existsSync.returns(false)
 
   const url = util.getUrl()
-  expect(logger.warn).to.have.been.calledWith(
-    'Package file not found: %s', packagePath)
-  expect(url).to.deep.equal({})
+  t.true(logger.warn.calledWith(
+    'Package file not found: %s', packagePath))
+  t.same(url, {})
 })
 
 function injectPkgData (pkgData, checkFn) {
@@ -62,9 +57,9 @@ test('util.getUrl: returns empty object on repository field not found', (t) => {
 
   injectPkgData({}, () => {
     const url = util.getUrl()
-    expect(logger.warn).to.have.been.calledWith(
-      'Repository field not found in package.json')
-    expect(url).to.deep.equal({})
+    t.true(logger.warn.calledWith(
+      'Repository field not found in package.json'))
+    t.same(url, {})
   })
 })
 
@@ -84,7 +79,7 @@ test('util.getUrl: parses URL from repository in shortcut form', (t) => {
     const pkgData = {repository}
     injectPkgData(pkgData, () => {
       const url = util.getUrl()
-      expect(url).to.deep.equal({user, project})
+      t.same(url, {user, project})
     })
   })
 })
@@ -103,7 +98,7 @@ test('util.getUrl: returns empty object on failure parsing repository in shortcu
     const pkgData = {repository}
     injectPkgData(pkgData, () => {
       const url = util.getUrl()
-      expect(url).to.deep.equal({})
+      t.same(url, {})
     })
   })
 })
@@ -115,9 +110,9 @@ test('util.getUrl: returns empty object on repository type not found', (t) => {
   const pkgData = {repository: {}}
   injectPkgData(pkgData, () => {
     const url = util.getUrl()
-    expect(logger.warn).to.have.been.calledWith(
-      'Repository type field not found in package.json')
-    expect(url).to.deep.equal({})
+    t.true(logger.warn.calledWith(
+      'Repository type field not found in package.json'))
+    t.same(url, {})
   })
 })
 
@@ -129,9 +124,9 @@ test('util.getUrl: returns empty object on repository type not git', (t) => {
   const pkgData = {repository: {type: repositoryType}}
   injectPkgData(pkgData, () => {
     const url = util.getUrl()
-    expect(logger.warn).to.have.been.calledWith(
-      'Repository type is not git in package.json: %s', repositoryType)
-    expect(url).to.deep.equal({})
+    t.true(logger.warn.calledWith(
+      'Repository type is not git in package.json: %s', repositoryType))
+    t.same(url, {})
   })
 })
 
@@ -142,9 +137,9 @@ test('util.getUrl: returns empty object on repository.url field not found', (t) 
   const pkgData = {repository: {type: 'git'}}
   injectPkgData(pkgData, () => {
     const url = util.getUrl()
-    expect(logger.warn).to.have.been.calledWith(
-      'Repository URL not found in package.json')
-    expect(url).to.deep.equal({})
+    t.true(logger.warn.calledWith(
+      'Repository URL not found in package.json'))
+    t.same(url, {})
   })
 })
 
@@ -166,7 +161,7 @@ test('util.getUrl: parses URL from repository.url field', (t) => {
   }
   injectPkgData(pkgData, () => {
     const url = util.getUrl()
-    expect(url).to.equal(expected)
+    t.is(url, expected)
   })
-  expect(ghUrl).to.have.been.calledWith(pkgData.repository.url)
+  t.true(ghUrl.calledWith(pkgData.repository.url))
 })
