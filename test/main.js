@@ -32,41 +32,38 @@ test.beforeEach((t) => {
   t.context = { git, github, logger, main, parseArguments }
 })
 
-test('main: returns when user name is not found', (t) => {
+test('main: returns when user name is not found', async function (t) {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['a tag', 'another tag'])
   parseArguments.returns({logLevel: 'debug'})
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith(
-      'User name not found in package.json. ' +
-      'Use -u/--user to pass it explicitly.'))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith(
+    'User name not found in package.json. ' +
+    'Use -u/--user to pass it explicitly.'))
 })
 
-test('main: returns when project name is not found', (t) => {
+test('main: returns when project name is not found', async function (t) {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['a tag', 'another tag'])
   parseArguments.returns({logLevel: 'debug', user: 'user'})
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith(
-      'Project name not found in package.json. ' +
-      'Use -p/--project to pass it explicitly'))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith(
+    'Project name not found in package.json. ' +
+    'Use -p/--project to pass it explicitly'))
 })
 
-test('main: returns when no tags are found in repository', (t) => {
+test('main: returns when no tags are found in repository', async function (t) {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns([])
   parseArguments.returns({logLevel: 'debug', user: 'user', project: 'project'})
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith('No tags found in repository'))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith('No tags found in repository'))
 })
 
-test('main: returns when tag is not semver compliant', (t) => {
+test('main: returns when tag is not semver compliant', async function (t) {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['a tag', 'another tag'])
   const tag = 'not a semver tag'
@@ -76,13 +73,12 @@ test('main: returns when tag is not semver compliant', (t) => {
     project: 'project',
     tag
   })
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith('Tag not semver compliant: %s', tag))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith('Tag not semver compliant: %s', tag))
 })
 
-test('main: returns when tag is not found in repository', (t) => {
+test('main: returns when tag is not found in repository', async function (t) {
   const { git, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['v1.0.0'])
   const tag = 'v0.1.0'
@@ -92,13 +88,12 @@ test('main: returns when tag is not found in repository', (t) => {
     project: 'project',
     tag
   })
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith('Tag not found in repository: %s', tag))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith('Tag not found in repository: %s', tag))
 })
 
-test('main: logs number of comments written on success', (t) => {
+test('main: logs number of comments written on success', async function (t) {
   const { git, github, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['v1.0.0'])
   git.getMergeCommits.returns(['a commit', 'another commit'])
@@ -113,14 +108,13 @@ test('main: logs number of comments written on success', (t) => {
   github.authorize.resolves('authorization data')
   const newComments = ['a new comment', null, 'another new comment']
   github.writeComments.resolves(newComments)
-  return main().then((retcode) => {
-    t.is(retcode, 0)
-    t.true(logger.info.calledWith('%d comments written', 2))
-    t.true(logger.info.calledWith('Done!'))
-  })
+  const retcode = await main()
+  t.is(retcode, 0)
+  t.true(logger.info.calledWith('%d comments written', 2))
+  t.true(logger.info.calledWith('Done!'))
 })
 
-test('main: writes unexpected error to log on failure', (t) => {
+test('main: writes unexpected error to log on failure', async function (t) {
   const { git, github, logger, main, parseArguments } = t.context
   git.getSemverTags.returns(['v1.0.0', 'v0.0.1'])
   git.getMergeCommits.returns(['a commit', 'another commit'])
@@ -135,8 +129,7 @@ test('main: writes unexpected error to log on failure', (t) => {
   github.authorize.resolves('authorization data')
   const error = new Error('some error')
   github.writeComments.rejects(error)
-  return main().then((retcode) => {
-    t.is(retcode, 1)
-    t.true(logger.error.calledWith(error))
-  })
+  const retcode = await main()
+  t.is(retcode, 1)
+  t.true(logger.error.calledWith(error))
 })

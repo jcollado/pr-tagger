@@ -15,13 +15,12 @@ test.beforeEach((t) => {
   t.context = { list, util }
 })
 
-test('github.util.checkAuthorization: resolves if issues can be retrieved', (t) => {
+test('github.util.checkAuthorization: resolves if issues can be retrieved', async function (t) {
   const {list, util} = t.context
   const expected = 'authorization data'
   list.yields()
-  return util.checkAuthorization(expected, 'program').then((authData) => {
-    t.is(authData, expected)
-  })
+  const authData = await util.checkAuthorization(expected, 'program')
+  t.is(authData, expected)
 })
 
 test("github.util.checkAuthorization: rejects if issues list can't be retrieved", (t) => {

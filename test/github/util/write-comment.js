@@ -21,26 +21,22 @@ test.beforeEach('create stubs', (t) => {
   t.context = { createComment, logger, util }
 })
 
-test('github.util.writeComment: writes comment object to log on success', (t) => {
+test('github.util.writeComment: writes comment object to log on success', async function (t) {
   const { createComment, logger, util } = t.context
   const expected = {html_url: '<some url>'}
   createComment.yields(null, expected, '<response>')
 
-  return util.writeComment('auth data', 'user', 'project', pr, 'body')
-    .then(() => {
-      t.true(logger.debug.calledWith(
-        'Comment added to PR#%d: %s', pr, expected.html_url))
-    })
+  await util.writeComment('auth data', 'user', 'project', pr, 'body')
+  t.true(logger.debug.calledWith(
+    'Comment added to PR#%d: %s', pr, expected.html_url))
 })
 
-test('github.util.writeComment: writes error to log on failure', (t) => {
+test('github.util.writeComment: writes error to log on failure', async function (t) {
   const { createComment, logger, util } = t.context
   const expected = new Error('some error')
   createComment.yields(expected)
 
-  return util.writeComment('auth data', 'user', 'project', pr, 'comment')
-    .then(() => {
-      t.true(logger.error.calledWith(
-        'Error adding comment to PR#%d: %s', pr, expected))
-    })
+  await util.writeComment('auth data', 'user', 'project', pr, 'comment')
+  t.true(logger.error.calledWith(
+    'Error adding comment to PR#%d: %s', pr, expected))
 })
