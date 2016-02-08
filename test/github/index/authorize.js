@@ -55,25 +55,19 @@ test('github.authorize: resolves to authorization data on success', async functi
   t.same(authData, expected)
 })
 
-test('github.authorize: rejects on general failure', async function (t) {
+test('github.authorize: rejects on general failure', (t) => {
   const { ghauth, github, program } = t.context
   const message = 'some error'
   ghauth.yields(new Error(message))
 
-  try {
-    await github.authorize(program)
-  } catch (error) {
-    t.is(error, 'GitHub Authorization failure: Error: some error')
-  }
+  t.throws(
+    github.authorize(program),
+    'GitHub Authorization failure: Error: some error')
 })
 
-test('github.authorize: rejects on bad credentials failure', async function(t) {
+test('github.authorize: rejects on bad credentials failure', (t) => {
   const { ghauth, github, program } = t.context
   ghauth.yields(new Error('Bad credentials'))
 
-  try {
-    await github.authorize(program)
-  } catch (error) {
-    t.true(error.includes('To troubleshoot the problem'))
-  }
+  t.throws(github.authorize(program), /To troubleshoot the problem/)
 })
