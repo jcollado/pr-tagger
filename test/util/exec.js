@@ -1,11 +1,6 @@
-import chai from 'chai'
 import requireInject from 'require-inject'
 import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 import test from 'ava'
-
-const expect = chai.expect
-chai.use(sinonChai)
 
 const command = 'some command'
 
@@ -32,7 +27,7 @@ test('util.exec: writes the command to the log', (t) => {
   const { exec, logger } = t.context
 
   exec(command)
-  expect(logger.debug).to.have.been.calledWith('Command: %s', command)
+  t.true(logger.debug.calledWith('Command: %s', command))
 })
 
 test('util.exec: returns command stdout on success', (t) => {
@@ -41,7 +36,7 @@ test('util.exec: returns command stdout on success', (t) => {
   childProcess.execSync.returns(expectedStdout)
 
   const stdout = exec(command)
-  expect(stdout).to.equal(expectedStdout)
+  t.is(stdout, expectedStdout)
 })
 
 test('util.exec: logs error and exits on failure', (t) => {
@@ -52,8 +47,8 @@ test('util.exec: logs error and exits on failure', (t) => {
   sinon.stub(process, 'exit')
   try {
     exec(command)
-    expect(logger.error).to.have.been.calledWith(expectedError)
-    expect(process.exit).to.have.been.calledWith(1)
+    t.true(logger.error.calledWith(expectedError))
+    t.true(process.exit.calledWith(1))
   } finally {
     process.exit.restore()
   }
