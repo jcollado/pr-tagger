@@ -47,7 +47,7 @@ function authorize (program) {
     if (error.message.includes('Bad credentials')) {
       message += badCredentialsMessage
     }
-    return Promise.reject(message)
+    return Promise.reject(new Error(message))
   })
 }
 
