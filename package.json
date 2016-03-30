@@ -55,7 +55,7 @@
     "babel-preset-es2015-node4": "2.1.0",
     "babel-register": "6.6.5",
     "coveralls": "2.11.9",
-    "ghooks": "1.1.0",
+    "ghooks": "1.1.1",
     "multitest": "0.4.1",
     "nyc": "6.1.1",
     "require-inject": "1.3.1",
